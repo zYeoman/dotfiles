@@ -1,0 +1,13 @@
+export LANG=zh_CN.UTF-8
+
+export GTK_IM_MODULE=fcitx
+export QT_IM_MODULE=fcitx
+export XMODIFIERS=@im=fcitx
+# Change caps to escape
+setxkbmap -layout us -option caps:escape
+# Or
+# xmodmap -e "clear lock" #disable caps lock switch
+# xmodmap -e "keysym Caps_Lock = Escape" #set caps_lock as escape
+
+xrdb ~/.Xresources &
+exec i3 -V

@@ -1,0 +1,22 @@
+
+
+## If applied, this commit will...
+
+# Explain why this change is being made
+
+# Provide links to any relevant tickets,
+# articles or other resources
+#
+# history
+# ####
+#
+# Init     | :tada:      # 版本标签 | :bookmark:
+# 新功能   | :sparkles:  # Debug    | :ambulance:
+# merge    | :eyes:      # linter   | :shirt:
+# 接口改变 | :hammer:    # 文本注释 | :pencil:
+# 代码重构 | :ribbon:    # 编写文档 | :books:
+# 执行效率 | :racehorse: # 代码美化 | :tophat:
+# 添加工具 | :wrench:    # 添加测试 | :rotating_light:
+# 删除弃用 | :fire:      # 工作中   | :construction:
+# 功能增强 | :boom:      # 添加测试 | :white_check_mark:
+# 安全性   | :lock:      # 国际化   | :globe_with_meridians:

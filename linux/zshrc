@@ -1,0 +1,110 @@
+# If you come from bash you might have to change your $PATH.
+# export PATH=$HOME/bin:/usr/local/bin:$PATH
+
+# Path to your oh-my-zsh installation.
+  export ZSH=$HOME/.oh-my-zsh
+
+# Uncomment the following line to enable command auto-correction.
+# ENABLE_CORRECTION="true"
+
+# Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
+# Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
+# Example format: plugins=(rails git textmate ruby lighthouse)
+# Add wisely, as too many plugins slow down shell startup.
+plugins=(git-extras pip z extract cp colored-man-pages sudo)
+
+# colorize: syntax cat
+# cp: cp with progress bar
+# extract: x for extract
+# git-extras: git alias
+# compleat: compleate
+
+source $ZSH/oh-my-zsh.sh
+
+# User configuration
+
+PROMPT=$'%{$fg_bold[green]%}%n@%m %{$fg[blue]%}%D{[%T]} %{$reset_color%}%{$fg[white]%}[%~]%{$reset_color%} $(git_prompt_info)\
+%{$fg[blue]%}->%{$fg_bold[blue]%} %#%{$reset_color%} '
+
+ZSH_THEME_GIT_PROMPT_PREFIX="%{$fg[green]%}["
+ZSH_THEME_GIT_PROMPT_SUFFIX="]%{$reset_color%}"
+ZSH_THEME_GIT_PROMPT_DIRTY=" %{$fg[red]%}*%{$fg[green]%}"
+ZSH_THEME_GIT_PROMPT_CLEAN=""
+
+export EDITOR='vim'
+# export ARCHFLAGS="-arch x86_64"
+export SSH_KEY_PATH="~/.ssh/rsa_id"
+
+export PATH=$(ruby -e "puts Gem.user_dir")/bin:$PATH
+export PATH=$GOPATH/bin:$PATH
+export PATH=.:$PATH
+export LC_ALL=zh_CN.UTF-8
+export TERM=xterm-256color
+export GOPATH=~/gocode/
+alias p="proxychains -q"
+alias pg="proxychains -q git"
+
+alias lisp=clisp
+alias haskell=ghc
+alias erlang=erl
+alias scheme=csi
+alias def="/usr/bin/sdcv -u 朗道英汉字典 "
+alias pls='sudo $(fc -ln -1)'
+
+# fzf
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+if type fortune > /dev/null; then
+    echo
+    echo "============================== Quote Of The Day =============================="
+    echo
+    fortune
+    echo
+    echo "=============================================================================="
+    echo
+fi
+
+WITTR_H=7
+[[ $COLUMNS -gt 124 ]] && WITTR_H=17
+if type proxychains > /dev/null; then
+    proxychains -q curl --connect-timeout 1 -s -N "wttr.in/beijing?m&lang=zh" | head -n $WITTR_H
+else
+    curl --connect-timeout 1 -s -N "wttr.in/beijing?m" | head -n $WITTR_H
+fi
+
+PERL5LIB="/home/mickir/perl5/lib/perl5${PERL5LIB:+:${PERL5LIB}}"; export PERL5LIB;
+PERL_LOCAL_LIB_ROOT="/home/mickir/perl5${PERL_LOCAL_LIB_ROOT:+:${PERL_LOCAL_LIB_ROOT}}"; export PERL_LOCAL_LIB_ROOT;
+PERL_MB_OPT="--install_base \"/home/mickir/perl5\""; export PERL_MB_OPT;
+PERL_MM_OPT="INSTALL_BASE=/home/mickir/perl5"; export PERL_MM_OPT;
+
+export PYTHONSTARTUP=~/.pythonrc
+export CDPATH=~
+export HISTIGNORE="pwd:ls:ls -alh"
+
+### Added by Zplugin's installer
+source '/home/mickir/.zplugin/bin/zplugin.zsh'
+autoload -Uz _zplugin
+(( ${+_comps} )) && _comps[zplugin]=_zplugin
+### End of Zplugin's installer chunk
+zplugin load paulmelnikow/zsh-startup-timer
+# Wait 1s to load
+zplugin ice wait'1'
+zplugin light 'sei40kr/zsh-tmux-rename'
+zplugin ice wait"1" # 1 second after prompt
+zplugin light 'zdharma/fast-syntax-highlighting'
+zplugin load 'popstas/zsh-command-time'
+zplugin load 'hlissner/zsh-autopair'
+zplugin load 'zsh-users/zsh-autosuggestions'
+zplugin load 'MichaelAquilina/zsh-you-should-use'
+zplugin load 'zsh-users/zsh-completions'
+zplugin ice atclone"dircolors -b LS_COLORS > c.zsh" atpull'%atclone' pick"c.zsh"
+zplugin light trapd00r/LS_COLORS
+
+eval "$(direnv hook zsh)"
+
+alias did="vim +'normal Go' +'r!date' ~/did.txt"
+alias think="vim +'normal Go' +'r!date' ~/think.txt"
+
+function chpwd() {
+  td
+}
