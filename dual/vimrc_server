@@ -1,0 +1,301 @@
+scriptencoding utf-8
+" Title: Vimrc server without Plugins
+" Maintainer: Yeoman Zhuang <zyeoman@163.com>
+" Last Modified: 2018-07-26 22:53 +0800
+
+" Startup {{{
+  if has('autocmd')
+    " Remove ALL autocommand for the current group
+    au!
+  endif
+  if has('gui')
+    let isGUI = 1
+  else
+    let isGUI = 0
+  endif
+  if has('win32')
+    let isWindows = 1
+  else
+    let isWindows = 0
+  endif
+  let yeo_vimroot=expand('$HOME/.vim')
+  " Auto Reload Vimrc
+  autocmd BufWritePost $MYVIMRC source $MYVIMRC | AirlineRefresh
+  autocmd FileType vim set foldmethod=marker
+  autocmd FileType cpp setlocal commentstring=//\ %s shiftwidth=2
+  autocmd FileType html setlocal shiftwidth=2 tabstop=2
+  autocmd FileType python setlocal expandtab shiftwidth=4 softtabstop=4
+  " strip space
+  autocmd BufWritePre * call StripWhitespace()
+  autocmd BufWritePre $MYVIMRC call <SID>UpdateLastMod('" ')
+  autocmd BufWritePre *.js,*.css call <SID>UpdateLastMod(' * ')
+  autocmd BufWritePre *.rb,*.py,*.sh call <SID>UpdateLastMod('# ')
+  autocmd BufWritePre *.md,*.markdown call <SID>UpdateLastMod('')
+  autocmd BufWritePre *.c,*.cpp,*.h,*.hpp,*.cc call <SID>UpdateLastMod('')
+" }}}
+" Lang & Encoding {{{
+if !exists('g:VimrcIsLoad')
+  filetype on
+  filetype plugin on
+  filetype plugin indent on
+  set foldlevel=99
+  set foldmethod=syntax
+  " local language
+  set encoding=utf-8
+  set fileencoding=utf-8
+  set fileencodings=utf-8,ucs-bom,gb18030,gbk,gb2312,cp936
+  set termencoding=utf-8
+  set helplang=en
+  language messages en_US.utf-8
+  " 输入法
+  if has('multi_byte_ime')
+    hi Cursor guifg=bg guibg=Orange gui=NONE
+    hi CursorIm guifg=NONE guibg=Skyblue gui=NONE
+    set iminsert=0 imsearch=0
+  endif
+  if isGUI
+    set linespace=0
+    " GUI
+    set guifont=Source_Code_Pro_Medium:h11
+    set guioptions=
+    autocmd GUIEnter * simalt ~x
+  endif
+endif
+" }}}
+" Functions {{{
+  " --- Strip trailing whitespace ---
+  function! StripWhitespace ()
+    let save_cursor = getpos(".")
+    let old_query = getreg('/')
+    :%s/\s\+$//e
+    call setpos('.', save_cursor)
+    call setreg('/', old_query)
+  endfunction
+  function! CleanBufs()
+    for bufNr in filter(range(1, bufnr('$')),
+      \ 'buflisted(v:val) && !bufloaded(v:val)')
+      execute bufNr . 'bdelete'
+    endfor
+  endfunction
+  function! s:ToggleQf()
+    for buffer in tabpagebuflist()
+      if bufname(buffer) == ''
+        " then it should be the quickfix window
+        cclose
+        return
+      endif
+    endfor
+    copen
+  endfunction
+  " 更新最后修改时间
+  function! <SID>UpdateLastMod(pre)
+    " preparation: save last search, and cursor position.
+    let _s=@/
+    let l = line(".")
+    let c = col(".")
+
+    let n = min([10, line('$')]) " 检查头部多少行
+    let timestamp = strftime('%Y-%m-%d %H:%M %z') " 时间格式
+    let timestamp = substitute(timestamp, '%', '\%', 'g')
+    let pat = substitute('\(Last Modified\|date\):\s*\zs.*\ze', '%', '\%', 'g')
+    keepjumps silent execute '1,'.n.'s%^.*'.a:pre.pat.'.*$%'.timestamp.'%e'
+
+    " clean up: restore previous search history, and cursor position
+    let @/=_s
+    call cursor(l, c)
+  endfunction
+  " sdcv translate
+  " http://renwolang521.iteye.com/blog/1317789
+  function! Mydict()
+    let expl=system('sdcv -u 朗道英汉字典 -n ' .
+          \  expand("<cword>"))
+    windo if
+          \ expand("%")=="dict-tmp" |
+          \ q!|endif
+    10sp dict-tmp
+    setlocal buftype=nofile bufhidden=hide noswapfile
+    1s/^/\=expl/
+    9
+  endfunction
+  nmap <C-t> :call Mydict()<cr>
+" }}}
+" General {{{
+  set mouse=
+  set nocompatible
+  set noswapfile
+  set nobackup
+  set history=1024
+  set autochdir
+  set ttyfast
+  " Auto reload file
+  set autoread
+  set whichwrap=b,s,<,>,[,],h,l
+  " 补全列表显示
+  set wildmenu
+  set wildmode=list:longest,full
+  " Ignore file config
+  set wildignore=*.o,*.obj,*~ "stuff to ignore when tab completing
+  set wildignore+=*/tmp/*,*.so,*.swp,*.zip,*DS_Store*,vendor/rails/**,vendor/cache/**,*.gem,log/**,tmp/**
+  set wildignore+=*.png,*.jpg,*.gif,*.webp,*.psd,*.exe,*.sketch
+  set wildignore+=*.so,*.swp,*.zip,*/.Trash/**,*.pdf,*.dmg,*/Library/**,*/.rbenv/**
+  set wildignore+=*/.nx/**,*.app,*.git,.git,.svn
+  " TAB替换空格
+  set smarttab
+  " 简写消息
+  set shortmess=atOI
+  " No BOM
+  set nobomb
+  " Backspace autoindent, end of line, start of insert
+  set backspace=indent,eol,start
+" }}}
+" Global undo {{{
+  " global undo
+  let yeo_undodir = expand(yeo_vimroot . '/undodir')
+  if !isdirectory(yeo_undodir)
+    call mkdir(yeo_undodir, 'p')
+  endif
+  let &undodir = yeo_undodir
+  set undofile
+" }}}
+" GUI {{{
+  set lazyredraw
+  " 总是显示状态栏
+  set laststatus=2
+  " 显示行尾空格和TAB
+  set list
+  set listchars=tab:>-,trail:-
+  " line number
+  set number
+  set relativenumber
+  autocmd FocusLost * :set norelativenumber number
+  autocmd FocusGained * :set relativenumber
+  " 插入模式下用绝对行号, 普通模式下用相对
+  autocmd InsertEnter * :set norelativenumber number
+  autocmd InsertLeave * :set relativenumber
+  " 使用:browse命令时打开的文件夹
+  set browsedir=buffer
+  set cursorline
+  set ruler
+  " search
+  set ignorecase
+  set smartcase
+  set incsearch
+  set hlsearch
+  " Scroll
+  set scrolloff=5
+  " color
+  set background=dark
+" }}}
+"netrw {{{
+  let g:netrw_liststyle = 3
+  let g:netrw_winsize = 16
+  let g:netrw_banner = 0
+  let g:netrw_browse_split = 2
+" }}}
+" Format {{{
+  set autoindent
+  set smartindent
+  set copyindent
+  set tabstop=4
+  set shiftwidth=4
+  set expandtab
+  set softtabstop=4
+  set formatoptions+=romnBj
+  set formatoptions-=t
+  set fileformat=unix
+  set fileformats=unix,dos,mac
+  try
+    set matchpairs=(:),{:},[:],《:》,〈:〉,［:］,（:）,「:」,『:』,‘:’,“:”
+  catch /^Vim\%((\a\+)\)\=:E474/
+  endtry
+  syntax on
+" }}}
+" {{{ key map
+  let mapleader=" "
+  nmap <silent> <leader>ee :e $MYVIMRC<cr>
+  " 使用leader q来打开关闭quickfix
+  nnoremap <silent> <leader>q :call <SID>ToggleQf()<cr>
+  nnoremap <silent> <leader>h :set nohlsearch<cr>
+  nnoremap / :set hlsearch<cr>/
+  nnoremap <silent> <leader>p :setlocal paste! paste?<cr>
+  nnoremap <TAB> :bn<cr>
+  " c-v c-c 粘贴复制
+  imap <C-v> <esc>"+pa
+  vmap <C-c> "+y
+  cmap <C-V> <C-R>+
+  imap <C-tab> :tabnext<cr>
+  nmap <C-tab> :tabnext<cr>
+  imap <C-S-tab> :tabprevious<cr>
+  nmap <C-S-tab> :tabprevious<cr>
+  " Insert Mode Map {{{
+  inoremap <C-a> <Home>
+  inoremap <C-e> <End>
+  inoremap <C-d> <BS>
+  inoremap <C-BS> <Esc>bdea
+  " }}}
+  " Nomal Mode Map {{{
+  noremap <Leader><Space> za
+  " 增强jkHL
+  nnoremap j gj
+  nnoremap k gk
+  nnoremap H ^
+  nnoremap L $
+  " 正常模式下 <C-e> j,k,h,l 调整分割窗口大小
+  " 使用simeji/winresizer实现，<C-e>之后开始
+  " Tab操作
+  nmap tn :tabnew
+  nmap tc :tabclose<cr>
+  nmap th :tabp<cr>
+  nmap tl :tabn<cr>
+  " }}}
+  " Visual Mode Map {{{
+  vnoremap < <gv
+  vnoremap > >gv
+  vmap <tab> >gv
+  vmap <s-tab> <gv
+  vnoremap  *  y/<C-R>=escape(@", '\\/.*$^~[]')<CR><CR>
+  vnoremap  #  y?<C-R>=escape(@", '\\/.*$^~[]')<CR><CR>
+  " }}}
+  " Command Mode Map {{{"
+  cnoremap <C-d> <BS>
+  cnoremap <C-a> <home>
+  cnoremap <C-e> <end>
+  " 来自
+  " https://vi.stackexchange.com/questions/16173/how-to-remap-w-to-up
+  cnoreabbrev <expr> w getcmdtype() == ":" && getcmdline() =~ '^w$' ? 'up' : 'w'
+  cnoreabbrev <expr> x getcmdtype() == ":" && getcmdline() == 'x' ? 'bd' : 'x'
+  " }}}
+" }}}
+  set complete+=k
+  set completeopt=menu,preview
+  nmap <C-k> <C-w>k
+  nmap <C-j> <c-w>j
+  nmap <C-h> <C-w>h
+  nmap <C-l> <c-w>l
+" }}}
+colorscheme desert
+if isWindows
+  if isGUI
+    let g:MyVimLib = 'gvimfullscreen.dll'
+    function! FullscreenToggle()
+      call libcallnr(g:MyVimLib, "ToggleFullScreen", 1)
+    endfunction
+    autocmd GUIEnter * call libcallnr(g:MyVimLib, "SetAlpha", 240)
+  else
+    set nocursorline
+    set termencoding=gbk
+    highlight Folded ctermbg=0
+    highlight FoldColumn ctermbg=0
+    highlight SignColumn ctermbg=0
+  endif
+endif
+" }}}
+"  加载 Vim 配置文件时让一些设置不再执行 {{{
+"  并记录加载 Vim 配置文件的次数
+if !exists("g:VimrcIsLoad")
+  let g:VimrcIsLoad = 1
+else
+  let g:VimrcIsLoad = g:VimrcIsLoad + 1
+endif
+" }}}
+" vim:expandtab shiftwidth=2 tabstop=8 textwidth=72
