@@ -37,6 +37,7 @@
 │   ├── k-means-img.py
 │   ├── sendmail.pl
 │   ├── transfer
+│   ├── zip.go
 │   └── www.avdh8.com.html
 └── windows
     ├── AndroidStudio.jar
@@ -88,6 +89,9 @@ cd linux
 ```
 In the motorcycle sport enduro, 113 is regarded as an unlucky number to be given to a race entrant and is colloquially known as a "blind pew".
 ```
+
+### zip.go
+图片压缩，并生成压缩包。
 
 #### TODO
 * Output with color and category
