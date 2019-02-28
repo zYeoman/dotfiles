@@ -1,7 +1,7 @@
 scriptencoding utf-8
 " Title: Vimrc for windows and linux
 " Maintainer: Yeoman Zhuang <zyeoman@163.com>
-" Last Modified: 2018-07-26 22:53 +0800
+" Last Modified: 2019-02-28 18:03 +0800
 
 " Startup {{{
   if has('autocmd')
@@ -117,6 +117,9 @@ endif
   " ]%       定位块尾
   Plug 'tmhedberg/matchit', { 'for': ['html', 'xml'] }
   " }}}
+  Plug 'octol/vim-cpp-enhanced-highlight'
+  Plug 'majutsushi/tagbar'
+  Plug 'lvht/tagbar-markdown'
   " Repeat -- 支持普通模式使用"."来重复执行一些插件的命令
   Plug 'tpope/vim-repeat'
   " 启动页面，包括最近使用的文件等
@@ -128,6 +131,7 @@ endif
     Plug 'Yggdroot/LeaderF', { 'do': './install.sh' }
     Plug 'chrisbra/SudoEdit.vim'
   endif
+  let g:Lf_MruMaxFiles = 233
   let g:Lf_WindowHeight=0.3
   let g:Lf_WildIgnore = {
     \ 'dir': ['.svn','.git','.hg'],
@@ -149,6 +153,7 @@ endif
   Plug 'pbrisbin/vim-mkdir'
   " 支持更多的ci,ca,cd等操作(包括‘“'",;:+=-等等)
   Plug 'wellle/targets.vim'
+  Plug 'dhruvasagar/vim-table-mode'
 
   " 自动填充 {{{
     " Install on archlinux
@@ -170,7 +175,7 @@ endif
     Plug 'lilydjwg/colorizer', { 'for': [ 'css', 'html', 'less', 'sass', 'scss', 'xml', 'xsd', 'xsl', 'xslt', 'mustache' ] }
   " }}}
   " 自动配对
-  Plug 'jiangmiao/auto-pairs'
+  Plug 'vim-scripts/auto-pairs-gentle'
   " Win Resize 使用C-e hjkl设置窗口大小
   Plug 'simeji/winresizer'
   " AsyncRun {{{
@@ -207,7 +212,7 @@ endif
   " }}}
   " Colorscheme
   Plug 'morhetz/gruvbox'
-  " Plug 'flazz/vim-colorschemes'
+  Plug 'flazz/vim-colorschemes'
   " Airline - 更轻的vim-powerline替代品
   Plug 'vim-airline/vim-airline'
   Plug 'vim-airline/vim-airline-themes'
@@ -221,6 +226,7 @@ endif
   endif
   " 对齐 {{{
   Plug 'vim-scripts/Align'
+  let g:loaded_AlignMapsPlugin=1
   " Plug 'junegunn/vim-easy-align'
   " Start interactive EasyAlign in visual mode (e.g. vipga)
   " xmap ga <Plug>(EasyAlign)
@@ -258,13 +264,27 @@ endif
 
   "Languages {{{
     Plug 'sheerun/vim-polyglot'
+    let g:polyglot_disabled = ['liquid', 'markdown']
     " Python and other languages code checker
     Plug 'w0rp/ale'
     " Python mode (indentation, doc, refactor, lints, code checking, motion and
     " operators, highlighting, run and ipdb breakpoints)
     " Plug 'klen/python-mode'
     Plug 'vimwiki/vimwiki'
-    Plug 'plasticboy/vim-markdown', {'for': 'md'}
+    Plug 'tpope/vim-markdown'
+    let g:markdown_folding = 1
+    let g:markdown_fenced_languages = ['verilog','python', 'matlab']
+    Plug 'zYeoman/vim-jekyll'
+    let g:jekyll_post_extension = '.md'
+    let g:jekyll_post_filetype = 'markdown'
+    " Plug 'plasticboy/vim-markdown'
+    "Vim-markdown {{{
+      " LeTeX math
+      " let g:vim_markdown_math=1
+      " Highlight YAML frontmatter
+      " let g:vim_markdown_frontmatter=1
+    " }}}
+    " Plug 'gabrielelana/vim-markdown'
   " }}}
 
   call plug#end()
@@ -338,7 +358,7 @@ endif
   set noswapfile
   set nobackup
   set history=1024
-  set autochdir
+  set noautochdir
   set ttyfast
   " Auto reload file
   set autoread
@@ -409,10 +429,10 @@ endif
   set autoindent
   set smartindent
   set copyindent
-  set tabstop=4
-  set shiftwidth=4
+  set tabstop=2
+  set shiftwidth=2
   set expandtab
-  set softtabstop=4
+  set softtabstop=2
   set formatoptions+=romnBj
   set formatoptions-=t
   set fileformat=unix
@@ -434,9 +454,10 @@ endif
   nnoremap <silent> <leader>l :LeaderfLine<cr>
   nnoremap <silent> <leader>t :LeaderfFunction<cr>
   nnoremap <silent> <leader>b :LeaderfBuffer<cr>
+  nnoremap <silent> <leader>- o--------------------------------------------------------
   nnoremap / :set hlsearch<cr>/
   nnoremap <silent> <leader>p :setlocal paste! paste?<cr>
-  nnoremap <TAB> :bn<cr>
+  " nnoremap <TAB> :bn<cr>
   " c-v c-c 粘贴复制
   imap <C-v> <esc>"+pa
   vmap <C-c> "+y
@@ -485,7 +506,6 @@ endif
   " }}}
 " }}}
 " Auto-pairs {{{
-  let g:AutoPairsFlyMode = 1
   " let g:AutoPairs['<'] = '>'
   " let g:AutoPairs['《'] = '》'
   " let g:AutoPairs['（'] = '）'
@@ -539,11 +559,12 @@ endif
   let g:ale_fix_on_save = 1
   let g:ale_fixers = {
   \  'python': ['autopep8'],
-  \  'cpp': ['clang-format']
+  \  'cpp': ['clang-format'],
+  \  'go' : ['gofmt', 'goimports']
   \ }
   let g:ale_linters = {
   \  'python': ['flake8 --max-line-length=81'],
-  \  'cpp': ['clang']
+  \  'cpp': ['clang'],
   \ }
   let g:ale_sign_error = 'xx'
   let g:ale_sign_warning = '!!'
@@ -560,12 +581,6 @@ endif
   " mappings to jump to changed blocks
   nmap <leader>gn <plug>(signify-next-hunk)
   nmap <leader>gp <plug>(signify-prev-hunk)
-" }}}
-"Vim-markdown {{{
-  " LeTeX math
-  let g:vim_markdown_math=1
-  " Highlight YAML frontmatter
-  let g:vim_markdown_frontmatter=1
 " }}}
 "Vim-templates {{{
   let g:username="Yongwen Zhuang"

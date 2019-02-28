@@ -11,7 +11,7 @@
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git-extras pip z extract cp colored-man-pages sudo)
+plugins=(git-extras pip extract cp colored-man-pages sudo)
 
 # colorize: syntax cat
 # cp: cp with progress bar
@@ -37,6 +37,7 @@ export SSH_KEY_PATH="~/.ssh/rsa_id"
 
 export PATH=$(ruby -e "puts Gem.user_dir")/bin:$PATH
 export PATH=$GOPATH/bin:$PATH
+export PATH=$HOME/.local/bin/:$PATH
 export PATH=.:$PATH
 export LC_ALL=zh_CN.UTF-8
 export TERM=xterm-256color
@@ -97,14 +98,42 @@ zplugin load 'hlissner/zsh-autopair'
 zplugin load 'zsh-users/zsh-autosuggestions'
 zplugin load 'MichaelAquilina/zsh-you-should-use'
 zplugin load 'zsh-users/zsh-completions'
+zplugin load 'skywind3000/z.lua'
 zplugin ice atclone"dircolors -b LS_COLORS > c.zsh" atpull'%atclone' pick"c.zsh"
 zplugin light trapd00r/LS_COLORS
 
 eval "$(direnv hook zsh)"
 
-alias did="vim +'normal Go' +'r!date' ~/did.txt"
-alias think="vim +'normal Go' +'r!date' ~/think.txt"
+alias did="vim +'normal Go' +'r!date +\%F' ~/did.txt"
+alias til="vim +'normal Go' +'r!date +\%F' ~/til.txt"
+
+alias duu="du -hsx * | sort -rh | head -6"
+# alias cat="bat"
+# alias du="ncdu"
+
+function todo() {
+  date --rfc-3339=date >> ~/.todo
+  echo $1 >> ~/.todo
+  echo >> ~/.todo
+}
 
 function chpwd() {
-  td
+  cat ~/.todo
+}
+
+alias mkdirr='function _mkdirr(){ mkdir $1 && cd $_;};_mkdirr'
+
+alias send='function _send_msg(){curl https://sc.ftqq.com/SCU35618T950f3ab0805c030f065c9cea0ca48c0e5be8505fef469.send\?text\=$1\&desp\=$2};_send_msg'
+clac(){ awk "BEGIN{ print $* }"; }
+function gitpush() {
+    B=$(git branch | sed -n -e 's/^\* \(.*\)/\1/p')
+    git add -A .
+    git commit -m $1
+    git push -u origin $B
+}
+function gitrefresh() {
+    B=$(git branch | sed -n -e 's/^\* \(.*\)/\1/p')
+    git checkout master
+    git pull origin master
+    git checkout $B
 }
