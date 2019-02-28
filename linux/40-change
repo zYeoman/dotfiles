@@ -1,0 +1,9 @@
+# Just echo our DHCP options we have
+
+case "$reason" in
+BOUND|BOUND6)
+	/usr/bin/thu net login
+	/usr/local/bin/cloudflare-ddns --update-now
+	exit 0
+	;;
+esac

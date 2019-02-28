@@ -11,6 +11,7 @@
 ├── imgs
 │   └── k-means-img-out.png
 ├── linux
+│   ├── 40-change
 │   ├── authorized_keys
 │   ├── i3config
 │   ├── i3status.conf
@@ -63,7 +64,8 @@
 cd linux
 ./install.sh
 ```
-
+#### 40-changes
+cp to `/usr/lib/dhcpcd/dhcpcd-hooks/40-change`，自动更新IP
 
 ## tools
 
