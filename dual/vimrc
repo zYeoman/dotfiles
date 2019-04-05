@@ -1,7 +1,7 @@
 scriptencoding utf-8
 " Title: Vimrc for windows and linux
 " Maintainer: Yeoman Zhuang <zyeoman@163.com>
-" Last Modified: 2019-02-28 18:03 +0800
+" Last Modified: 2019-04-05 01:57 +0800
 
 " Startup {{{
   if has('autocmd')
@@ -160,6 +160,8 @@ endif
     " Adding "--system-libclang" to ./install.py
     Plug 'Valloric/YouCompleteMe'
     Plug 'rdnetto/YCM-Generator', { 'branch': 'stable' }
+    " Plug 'maralla/completor.vim'
+    " Plug 'kyouryuukunn/completor-necovim'
     Plug 'ervandew/supertab'
     Plug 'asins/vim-dict'
     " 代码片段
@@ -170,7 +172,8 @@ endif
     " 新文件Template
     Plug 'aperezdc/vim-template'
     " Emmet
-    Plug 'mattn/emmet-vim', { 'for': [ 'css', 'html', 'less', 'sass', 'scss', 'xml', 'xsd', 'xsl', 'xslt', 'mustache' ] }
+    Plug 'mattn/emmet-vim', { 'for': [ 'css', 'html', 'less', 'sass', 'scss', 'xml', 'xsd', 'xsl', 'xslt', 'mustache','vue' ] }
+    imap   <C-y><C-y>   <plug>(emmet-expand-abbr)
     " Paint css colors with the real color
     Plug 'lilydjwg/colorizer', { 'for': [ 'css', 'html', 'less', 'sass', 'scss', 'xml', 'xsd', 'xsl', 'xslt', 'mustache' ] }
   " }}}
@@ -256,22 +259,26 @@ endif
   " 增加缩进文本对象: i   dai yai cii - 相同缩进属于同一块
   Plug 'kana/vim-textobj-indent'
   " 行内f、F快速跳转
-  Plug 'unblevable/quick-scope'
-  let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
+  " Plug 'unblevable/quick-scope'
+  " let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
   " Ctrl+Shift+F功能
   Plug 'dyng/ctrlsf.vim'
   nmap <C-f> <Plug>CtrlSFCwordPath
 
   "Languages {{{
+    " Plug 'maralla/completor.vim', {'for':['lua']}
     Plug 'sheerun/vim-polyglot'
-    let g:polyglot_disabled = ['liquid', 'markdown']
+    Plug 'romainl/vim-qlist'
+    " Plug 'xolox/vim-lua-ftplugin'
+    " Plug 'xolox/vim-misc'
+    let g:polyglot_disabled = ['liquid']
     " Python and other languages code checker
     Plug 'w0rp/ale'
     " Python mode (indentation, doc, refactor, lints, code checking, motion and
     " operators, highlighting, run and ipdb breakpoints)
     " Plug 'klen/python-mode'
     Plug 'vimwiki/vimwiki'
-    Plug 'tpope/vim-markdown'
+    " Plug 'tpope/vim-markdown'
     let g:markdown_folding = 1
     let g:markdown_fenced_languages = ['verilog','python', 'matlab']
     Plug 'zYeoman/vim-jekyll'
@@ -446,6 +453,8 @@ endif
 " {{{ key map
   let mapleader=" "
   nmap <silent> <leader>ee :e $MYVIMRC<cr>
+  nmap <silent> <leader>cd :cd %:h<cr>
+  nmap <expr> <CR> (&buftype is# "quickfix" ? "<CR>" : ":a<CR><CR>.<CR>")
   " 使用leader q来打开关闭quickfix
   nnoremap <silent> <leader>q :call <SID>ToggleQf()<cr>
   nnoremap <silent> <leader>h :set nohlsearch<cr>
@@ -524,6 +533,13 @@ endif
   let g:ycm_key_list_select_completion = ['<C-n>', '<Down>']
   let g:ycm_key_list_previous_completion = ['<C-p>', '<Up>']
   let g:SuperTabDefaultCompletionType = '<C-n>'
+  " fun! Change_min()
+  "     " Don't strip on these filetypes
+  "     if &ft =~ 'lua\|javascript\|perl'
+  "     else
+  "     endif
+  " endfun
+  " autocmd FileType * call Change_min()
   " 跳转到定义处, 分屏打开
   let g:ycm_goto_buffer_command = 'horizontal-split'
   let g:ycm_register_as_syntastic_checker = 0
@@ -578,9 +594,12 @@ endif
   " this first setting decides in which order try to guess your current vcs
   " UPDATE it to reflect your preferences, it will speed up opening files
   let g:signify_vcs_list = [ 'git', 'hg' ]
+  let g:signify_vcs_cmds = {
+      \ 'git': 'git diff --no-color --no-ext-diff -w -U0 -- %f' }
   " mappings to jump to changed blocks
   nmap <leader>gn <plug>(signify-next-hunk)
   nmap <leader>gp <plug>(signify-prev-hunk)
+  nmap <leader>gg :SignifyFold<cr>
 " }}}
 "Vim-templates {{{
   let g:username="Yongwen Zhuang"
@@ -593,8 +612,7 @@ endif
   " Vim incsearch
   let g:vim_search_pulse_disable_auto_mappings = 1
   let g:incsearch#auto_nohlsearch = 1
-  " GitGutter Setting
-  let g:gitgutter_sign_column_always = 0
+  " vim-cool自动关闭highlight
 " }}}
 " Plugin Key Map {{{
   " mapping

@@ -31,10 +31,12 @@ ZSH_THEME_GIT_PROMPT_SUFFIX="]%{$reset_color%}"
 ZSH_THEME_GIT_PROMPT_DIRTY=" %{$fg[red]%}*%{$fg[green]%}"
 ZSH_THEME_GIT_PROMPT_CLEAN=""
 
+export ANDROID_HOME='/opt/android-sdk'
 export EDITOR='vim'
 # export ARCHFLAGS="-arch x86_64"
 export SSH_KEY_PATH="~/.ssh/rsa_id"
 
+export PATH=$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:$PATH
 export PATH=$(ruby -e "puts Gem.user_dir")/bin:$PATH
 export PATH=$GOPATH/bin:$PATH
 export PATH=$HOME/.local/bin/:$PATH
@@ -65,13 +67,13 @@ if type fortune > /dev/null; then
     echo
 fi
 
-WITTR_H=7
-[[ $COLUMNS -gt 124 ]] && WITTR_H=17
-if type proxychains > /dev/null; then
-    proxychains -q curl --connect-timeout 1 -s -N "wttr.in/beijing?m&lang=zh" | head -n $WITTR_H
-else
-    curl --connect-timeout 1 -s -N "wttr.in/beijing?m" | head -n $WITTR_H
-fi
+# WITTR_H=7
+# [[ $COLUMNS -gt 124 ]] && WITTR_H=17
+# if type proxychains > /dev/null; then
+#     proxychains -q curl --connect-timeout 1 -s -N "wttr.in/beijing?m&lang=zh" | head -n $WITTR_H
+# else
+#     curl --connect-timeout 1 -s -N "wttr.in/beijing?m" | head -n $WITTR_H
+# fi
 
 PERL5LIB="/home/mickir/perl5/lib/perl5${PERL5LIB:+:${PERL5LIB}}"; export PERL5LIB;
 PERL_LOCAL_LIB_ROOT="/home/mickir/perl5${PERL_LOCAL_LIB_ROOT:+:${PERL_LOCAL_LIB_ROOT}}"; export PERL_LOCAL_LIB_ROOT;
@@ -104,10 +106,12 @@ zplugin light trapd00r/LS_COLORS
 
 eval "$(direnv hook zsh)"
 
-alias did="vim +'normal Go' +'r!date +\%F' ~/did.txt"
-alias til="vim +'normal Go' +'r!date +\%F' ~/til.txt"
+alias tid="vim +'normal Go' +'r!date +\%F' ~/tik/tid.wiki"
+alias til="vim +'normal Go' +'r!date +\%F' ~/tik/til.wiki"
+alias tir="vim +'normal Go' +'r!date +\%F' ~/tik/tir.wiki"
 
-alias duu="du -hsx * | sort -rh | head -6"
+alias duu="sudo du -hsx * | sort -rh | head -6"
+alias cp="rsync -ae ssh"
 # alias cat="bat"
 # alias du="ncdu"
 
@@ -137,3 +141,5 @@ function gitrefresh() {
     git pull origin master
     git checkout $B
 }
+
+# alsi # Print linux info
