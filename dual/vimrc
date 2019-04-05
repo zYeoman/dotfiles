@@ -1,7 +1,7 @@
 scriptencoding utf-8
 " Title: Vimrc for windows and linux
 " Maintainer: Yeoman Zhuang <zyeoman@163.com>
-" Last Modified: 2019-04-05 01:57 +0800
+" Last Modified: 2019-04-05 15:26 +0800
 
 " Startup {{{
   if has('autocmd')
@@ -596,6 +596,7 @@ endif
   let g:signify_vcs_list = [ 'git', 'hg' ]
   let g:signify_vcs_cmds = {
       \ 'git': 'git diff --no-color --no-ext-diff -w -U0 -- %f' }
+  let g:vimwiki_list = [{'path':'~/tik/','syntax':'markdown'}]
   " mappings to jump to changed blocks
   nmap <leader>gn <plug>(signify-next-hunk)
   nmap <leader>gp <plug>(signify-prev-hunk)
