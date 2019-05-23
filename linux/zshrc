@@ -114,16 +114,6 @@ alias cp="rsync -ae ssh"
 # alias cat="bat"
 # alias du="ncdu"
 
-function todo() {
-  date --rfc-3339=date >> ~/.todo
-  echo $1 >> ~/.todo
-  echo >> ~/.todo
-}
-
-function chpwd() {
-  cat ~/.todo
-}
-
 alias mkdirr='function _mkdirr(){ mkdir $1 && cd $_;};_mkdirr'
 
 alias send='function _send_msg(){curl https://sc.ftqq.com/SCU35618T950f3ab0805c030f065c9cea0ca48c0e5be8505fef469.send\?text\=$1\&desp\=$2};_send_msg'
