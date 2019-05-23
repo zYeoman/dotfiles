@@ -1,7 +1,7 @@
 scriptencoding utf-8
 " Title: Vimrc for windows and linux
 " Maintainer: Yeoman Zhuang <zyeoman@163.com>
-" Last Modified: 2019-04-05 15:26 +0800
+" Last Modified: 2019-05-23 19:59 +0800
 
 " Startup {{{
   if has('autocmd')
@@ -33,6 +33,10 @@ scriptencoding utf-8
   endif
   "   }}}
   let yeo_vimroot=expand('$HOME/.vim')
+  augroup qf
+    autocmd!
+    autocmd FileType qf set nobuflisted
+  augroup END
   " Auto Reload Vimrc
   autocmd BufWritePost $MYVIMRC source $MYVIMRC | AirlineRefresh
   autocmd FileType vim set foldmethod=marker
