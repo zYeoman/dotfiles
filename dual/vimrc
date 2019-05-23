@@ -44,12 +44,12 @@ scriptencoding utf-8
   autocmd FileType html setlocal shiftwidth=2 tabstop=2
   autocmd FileType python setlocal expandtab shiftwidth=4 softtabstop=4
   " strip space
-  autocmd BufWritePre * call StripWhitespace()
-  autocmd BufWritePre $MYVIMRC call <SID>UpdateLastMod('" ')
-  autocmd BufWritePre *.js,*.css call <SID>UpdateLastMod(' * ')
-  autocmd BufWritePre *.rb,*.py,*.sh call <SID>UpdateLastMod('# ')
-  autocmd BufWritePre *.md,*.markdown call <SID>UpdateLastMod('')
-  autocmd BufWritePre *.c,*.cpp,*.h,*.hpp,*.cc call <SID>UpdateLastMod('')
+  " autocmd BufWritePre * call StripWhitespace()
+  " autocmd BufWritePre $MYVIMRC call <SID>UpdateLastMod('" ')
+  " autocmd BufWritePre *.js,*.css call <SID>UpdateLastMod(' * ')
+  " autocmd BufWritePre *.rb,*.py,*.sh call <SID>UpdateLastMod('# ')
+  " autocmd BufWritePre *.md,*.markdown call <SID>UpdateLastMod('')
+  " autocmd BufWritePre *.c,*.cpp,*.h,*.hpp,*.cc call <SID>UpdateLastMod('')
 " }}}
 " Lang & Encoding {{{
 if !exists('g:VimrcIsLoad')
@@ -419,17 +419,22 @@ endif
 " }}}
 " {{{ key map
   let mapleader=" "
+  nnoremap <leader>h :exe 'Ag!' expand('<cword>')<cr>
   nmap <silent> <leader>ee :e $MYVIMRC<cr>
   nmap <silent> <leader>cd :cd %:h<cr>
   nmap <expr> <CR> (&buftype is# "quickfix" ? "<CR>" : ":a<CR><CR>.<CR>")
   " 使用leader q来打开关闭quickfix
   nnoremap <silent> <leader>q :call <SID>ToggleQf()<cr>
-  nnoremap <silent> <leader>h :set nohlsearch<cr>
+  " nnoremap <silent> <leader>h :set nohlsearch<cr>
   nnoremap <silent> <leader>y :Goyo<cr>
   nnoremap <silent> <leader>m :LeaderfMru<cr>
   nnoremap <silent> <leader>l :LeaderfLine<cr>
   nnoremap <silent> <leader>t :LeaderfFunction<cr>
   nnoremap <silent> <leader>b :LeaderfBuffer<cr>
+    let g:Lf_WildIgnore = {
+            \ 'dir': ['.svn','.git','.hg'],
+            \ 'file': ['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]','*.zip','*.tar.*']
+            \}
   nnoremap <silent> <leader>- o--------------------------------------------------------
   nnoremap / :set hlsearch<cr>/
   nnoremap <silent> <leader>p :setlocal paste! paste?<cr>
@@ -478,7 +483,8 @@ endif
   " 来自
   " https://vi.stackexchange.com/questions/16173/how-to-remap-w-to-up
   cnoreabbrev <expr> w getcmdtype() == ":" && getcmdline() =~ '^w$' ? 'up' : 'w'
-  cnoreabbrev <expr> x getcmdtype() == ":" && getcmdline() == 'x' ? 'bd' : 'x'
+  cnoreabbrev <expr> x getcmdtype() == ":" && getcmdline() == 'x' ? 'Kwbd' : 'x'
+  nnoremap p p=`]
   " }}}
 " }}}
 " Auto-pairs {{{
@@ -490,16 +496,19 @@ endif
 " }}}
 " Complete Settings {{{
   set complete+=k
-  set completeopt=menu,preview
+  set completeopt=menu,menuone
+  " let g:ycm_collect_identifiers_from_comments_and_strings = 1
+  let g:ycm_complete_in_strings=1
   ""Note: SuperTab 设置
   let g:ycm_global_ycm_extra_conf = yeo_vimroot . '/plugged/YouCompleteMe/third_party/ycmd/cpp/ycm/.ycm_extra_conf.py'
+  let g:ycm_show_diagnostics_ui = 0
   let g:ycm_seed_identifiers_with_syntax = 1
-  let g:SuperTabClosePreviewOnPopupClose = 1
   let g:ycm_confirm_extra_conf = 0
   " make YCM compatible with UltiSnips (using supertab)
   let g:ycm_key_list_select_completion = ['<C-n>', '<Down>']
   let g:ycm_key_list_previous_completion = ['<C-p>', '<Up>']
   let g:SuperTabDefaultCompletionType = '<C-n>'
+  " let g:SuperTabClosePreviewOnPopupClose = 1
   " fun! Change_min()
   "     " Don't strip on these filetypes
   "     if &ft =~ 'lua\|javascript\|perl'
@@ -515,8 +524,8 @@ endif
 
   " better key bindings for UltiSnipsExpandTrigger
   let g:UltiSnipsExpandTrigger = "<tab>"
-  let g:UltiSnipsJumpForwardTrigger = "<tab>"
-  let g:UltiSnipsJumpBackwardTrigger = "<s-tab>"
+  " let g:UltiSnipsJumpForwardTrigger = "<tab>"
+  " let g:UltiSnipsJumpBackwardTrigger = "<s-tab>"
 " }}}
 " Airline Settings {{{
   let g:airline_powerline_fonts = 1
@@ -524,31 +533,30 @@ endif
   let g:airline#extensions#tabline#enabled = 1
   let g:airline#extensions#tabline#formatter = 'unique_tail'
   let g:airline#extensions#tabline#buffer_idx_mode = 1
-" }}}
-"Python-mode {{{
-  let g:pymode_python = 'python3'
-  let g:vim_isort_python_version = 'python3'
-  let g:pymode_lint = 0
-  let g:pymode_lint_on_write = 0
-  let g:pymode_lint_signs = 0
-  " don't fold python code on open
-  let g:pymode_folding = 1
-  " don't load rope by default. Change to 1 to use rope
-  let g:pymode_rope = 0
+  let g:airline#extensions#tagbar#enabled = 1
 " }}}
 "ale {{{
+nmap <silent> <leader>k <Plug>(ale_previous)
+nmap <silent> <leader>j <Plug>(ale_next)
   let g:ale_c_parse_makefile = 1
   let g:ale_sign_column_always = 1
   let g:ale_fix_on_save = 1
   let g:ale_fixers = {
   \  'python': ['autopep8'],
   \  'cpp': ['clang-format'],
-  \  'go' : ['gofmt', 'goimports']
+  \  'go' : ['gofmt', 'goimports'],
+  \  'javascript': ['standard'],
+  \  'html': ['prettier'],
+  \  'css': ['stylelint'],
   \ }
-  let g:ale_linters = {
-  \  'python': ['flake8 --max-line-length=81'],
-  \  'cpp': ['clang'],
-  \ }
+  " let g:ale_linters = {
+  " \  'python': ['flake8 --max-line-length=81'],
+  " \  'cpp': ['clang'],
+  " \  'javascript': ['prettier'],
+  " \  'html': ['prettier'],
+  " \ }
+  let g:ale_lint_on_text_changed = 'normal'
+  let g:ale_lint_on_insert_leave = 1
   let g:ale_sign_error = 'xx'
   let g:ale_sign_warning = '!!'
   let g:airline#extensions#ale#enabled = 1
@@ -560,7 +568,7 @@ endif
 "Signify {{{
   " this first setting decides in which order try to guess your current vcs
   " UPDATE it to reflect your preferences, it will speed up opening files
-  let g:signify_vcs_list = [ 'git', 'hg' ]
+  let g:signify_vcs_list = ['git']
   let g:signify_vcs_cmds = {
       \ 'git': 'git diff --no-color --no-ext-diff -w -U0 -- %f' }
   let g:vimwiki_list = [{'path':'~/tik/','syntax':'markdown'}]
@@ -625,4 +633,68 @@ else
   let g:VimrcIsLoad = g:VimrcIsLoad + 1
 endif
 " }}}
+"here is a more exotic version of my original Kwbd script
+"delete the buffer; keep windows; create a scratch buffer if no buffers left
+function s:Kwbd(kwbdStage)
+  if(a:kwbdStage == 1)
+    if(!buflisted(winbufnr(0)))
+      bd!
+      return
+    endif
+    let s:kwbdBufNum = bufnr("%")
+    let s:kwbdWinNum = winnr()
+    windo call s:Kwbd(2)
+    execute s:kwbdWinNum . 'wincmd w'
+    let s:buflistedLeft = 0
+    let s:bufFinalJump = 0
+    let l:nBufs = bufnr("$")
+    let l:i = 1
+    while(l:i <= l:nBufs)
+      if(l:i != s:kwbdBufNum)
+        if(buflisted(l:i))
+          let s:buflistedLeft = s:buflistedLeft + 1
+        else
+          if(bufexists(l:i) && !strlen(bufname(l:i)) && !s:bufFinalJump)
+            let s:bufFinalJump = l:i
+          endif
+        endif
+      endif
+      let l:i = l:i + 1
+    endwhile
+    if(!s:buflistedLeft)
+      if(s:bufFinalJump)
+        windo if(buflisted(winbufnr(0))) | execute "b! " . s:bufFinalJump | endif
+      else
+        enew
+        let l:newBuf = bufnr("%")
+        windo if(buflisted(winbufnr(0))) | execute "b! " . l:newBuf | endif
+      endif
+      execute s:kwbdWinNum . 'wincmd w'
+    endif
+    if(buflisted(s:kwbdBufNum) || s:kwbdBufNum == bufnr("%"))
+      execute "bd! " . s:kwbdBufNum
+    endif
+    if(!s:buflistedLeft)
+      set buflisted
+      set bufhidden=delete
+      set buftype=
+      setlocal noswapfile
+    endif
+  else
+    if(bufnr("%") == s:kwbdBufNum)
+      let prevbufvar = bufnr("#")
+      if(prevbufvar > 0 && buflisted(prevbufvar) && prevbufvar != s:kwbdBufNum)
+        b #
+      else
+        bn
+      endif
+    endif
+  endif
+endfunction
+
+command! Kwbd call s:Kwbd(1)
+command! GitFold SignifyFold!
+nnoremap <silent> <Plug>Kwbd :<C-u>Kwbd<CR>
+
+" Create a mapping (e.g. in your .vimrc) like this:
 " vim:expandtab shiftwidth=2 tabstop=8 textwidth=72
