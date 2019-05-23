@@ -105,11 +105,11 @@ zplugin light trapd00r/LS_COLORS
 
 eval "$(direnv hook zsh)"
 
-alias tid="vim +'normal Go' +'r!date +\%F' ~/tik/tid.wiki"
+alias tid="vim +'normal Go' ~/tik/tid-$(date +%F).wiki"
 alias til="vim +'normal Go' +'r!date +\%F' ~/tik/til.wiki"
 alias tir="vim +'normal Go' +'r!date +\%F' ~/tik/tir.wiki"
 
-alias duu="sudo du -hsx * | sort -rh | head -6"
+alias duu="sudo du -hsx --one-file-system * | sort -rh | head -6"
 alias cp="rsync -ae ssh"
 # alias cat="bat"
 # alias du="ncdu"
@@ -117,7 +117,8 @@ alias cp="rsync -ae ssh"
 alias mkdirr='function _mkdirr(){ mkdir $1 && cd $_;};_mkdirr'
 
 alias send='function _send_msg(){curl https://sc.ftqq.com/SCU35618T950f3ab0805c030f065c9cea0ca48c0e5be8505fef469.send\?text\=$1\&desp\=$2};_send_msg'
-clac(){ awk "BEGIN{ print $* }"; }
+alias gb='git-bug'
+calc(){ awk "BEGIN{ print $* }"; }
 function gitpush() {
     B=$(git branch | sed -n -e 's/^\* \(.*\)/\1/p')
     git add -A .
@@ -132,3 +133,6 @@ function gitrefresh() {
 }
 
 # alsi # Print linux info
+# export FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git/*"'
+export FZF_DEFAULT_COMMAND='fd --exclude={.git,.idea,.vscode,.sass-cache,node_modules,build} --type f'
+export FZF_DEFAULT_OPTS='--bind tab:down --cycle --height 40% --reverse --preview "[[ $(file --mime {}) =~ binary ]] && echo {} is a binary file || (highlight -O ansi {} || cat {}) 2> /dev/null | head -100"'
