@@ -579,7 +579,7 @@ nmap <silent> <leader>j <Plug>(ale_next)
 " }}}
 "Vim-templates {{{
   let g:username="Yongwen Zhuang"
-  let g:email="zeoman@163.com"
+  let g:email="zyeoman@163.com"
 " }}}
 " Other Settings {{{ "
   let g:winresizer_gui_enable = 1
