@@ -167,7 +167,7 @@ endif
     " Plug 'maralla/completor.vim'
     " Plug 'kyouryuukunn/completor-necovim'
     Plug 'ervandew/supertab'
-    Plug 'asins/vim-dict'
+    " Plug 'asins/vim-dict'
     " 代码片段
     Plug 'MarcWeber/vim-addon-mw-utils'
     Plug 'tomtom/tlib_vim'
@@ -191,32 +191,6 @@ endif
   nnoremap <C-r> :AsyncRun<Space>
   nnoremap U <C-r>
   " }}}
-  " 彩虹括号 {{{
-  Plug 'luochen1990/rainbow'
-  let g:rainbow_active = 1
-    let g:rainbow_conf = {
-    \     'guifgs': ['royalblue3', 'darkorange3', 'seagreen3', 'firebrick'],
-    \     'ctermfgs': ['lightblue', 'lightyellow', 'lightcyan', 'lightmagenta'],
-    \     'operators': '_,_',
-    \     'parentheses': ['start=/(/ end=/)/ fold', 'start=/\[/ end=/\]/ fold', 'start=/{/ end=/}/ fold'],
-    \     'separately': {
-    \         '*': {},
-    \         'tex': {
-    \             'parentheses': ['start=/(/ end=/)/', 'start=/\[/ end=/\]/'],
-    \         },
-    \         'lisp': {
-    \             'guifgs': ['royalblue3', 'darkorange3', 'seagreen3', 'firebrick', 'darkorchid3'],
-    \         },
-    \         'vim': {
-    \             'parentheses': ['start=/(/ end=/)/', 'start=/\[/ end=/\]/', 'start=/{/ end=/}/ fold', 'start=/(/ end=/)/ containedin=vimFuncBody', 'start=/\[/ end=/\]/ containedin=vimFuncBody', 'start=/{/ end=/}/ fold containedin=vimFuncBody'],
-    \         },
-    \         'html': {
-    \             'parentheses': ['start=/\v\<((area|base|br|col|embed|hr|img|input|keygen|link|menuitem|meta|param|source|track|wbr)[ >])@!\z([-_:a-zA-Z0-9]+)(\s+[-_:a-zA-Z0-9]+(\=("[^"]*"|'."'".'[^'."'".']*'."'".'|[^ '."'".'"><=`]*))?)*\>/ end=#</\z1># fold'],
-    \         },
-    \         'css': 0,
-    \     }
-    \}
-  " }}}
   " Colorscheme
   Plug 'morhetz/gruvbox'
   Plug 'flazz/vim-colorschemes'
@@ -234,18 +208,12 @@ endif
   " 对齐 {{{
   Plug 'vim-scripts/Align'
   let g:loaded_AlignMapsPlugin=1
-  " Plug 'junegunn/vim-easy-align'
-  " Start interactive EasyAlign in visual mode (e.g. vipga)
-  " xmap ga <Plug>(EasyAlign)
   " }}}
   Plug 'scrooloose/nerdtree'
   " Mark显示
   Plug 'kshenoy/vim-signature'
   " F10 RUN
   Plug 'thinca/vim-quickrun'
-  " 快速移动
-  " 没用过这功能。。。
-  " Plug 'Lokaltog/vim-easymotion'
   " 中文Doc
   Plug 'vimcn/vimcdoc'
   " 使用:Dox :DoxAuthor添加描述
@@ -262,27 +230,22 @@ endif
   Plug 'kana/vim-textobj-entire'
   " 增加缩进文本对象: i   dai yai cii - 相同缩进属于同一块
   Plug 'kana/vim-textobj-indent'
-  " 行内f、F快速跳转
-  " Plug 'unblevable/quick-scope'
-  " let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
   " Ctrl+Shift+F功能
   Plug 'dyng/ctrlsf.vim'
   nmap <C-f> <Plug>CtrlSFCwordPath
 
   "Languages {{{
-    " Plug 'maralla/completor.vim', {'for':['lua']}
-    Plug 'sheerun/vim-polyglot'
-    Plug 'romainl/vim-qlist'
-    " Plug 'xolox/vim-lua-ftplugin'
-    " Plug 'xolox/vim-misc'
-    let g:polyglot_disabled = ['liquid']
+    " Plug 'sheerun/vim-polyglot', { 'for': ['shenmewanyier','python'] }
+    " Plug 'romainl/vim-qlist'
     " Python and other languages code checker
+    Plug 'tbastos/vim-lua'
+    Plug 'udalov/kotlin-vim'
     Plug 'w0rp/ale'
     " Python mode (indentation, doc, refactor, lints, code checking, motion and
     " operators, highlighting, run and ipdb breakpoints)
     " Plug 'klen/python-mode'
     Plug 'vimwiki/vimwiki'
-    " Plug 'tpope/vim-markdown'
+    Plug 'tpope/vim-markdown'
     let g:markdown_folding = 1
     let g:markdown_fenced_languages = ['verilog','python', 'matlab']
     Plug 'zYeoman/vim-jekyll'
@@ -611,8 +574,6 @@ endif
   let g:email="zeoman@163.com"
 " }}}
 " Other Settings {{{ "
-  nmap <Leader>* <Plug>(easymotion-prefix)
-  let g:EasyMotion_smartcase = 1
   let g:winresizer_gui_enable = 1
   " Vim incsearch
   let g:vim_search_pulse_disable_auto_mappings = 1
@@ -621,7 +582,6 @@ endif
 " }}}
 " Plugin Key Map {{{
   " mapping
-  nmap s <Plug>(easymotion-overwin-line)
   vmap v <Plug>(expand_region_expand)
   vmap <C-v> <Plug>(expand_region_shrink)
   map <Leader>ww <Plug>VimwikiIndex
