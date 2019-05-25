@@ -121,8 +121,6 @@ alias gb='git-bug'
 calc(){ awk "BEGIN{ print $* }"; }
 function gitpush() {
     B=$(git branch | sed -n -e 's/^\* \(.*\)/\1/p')
-    git add -A .
-    git commit -m $1
     git push -u origin $B
 }
 function gitrefresh() {
