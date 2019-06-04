@@ -221,18 +221,10 @@ endif
   let g:load_doxygen_syntax=1
   " 回到退出时的位置
   Plug 'farmergreg/vim-lastplace'
-  " text object
-  " 支持自定义文本对象
-  Plug 'kana/vim-textobj-user'
-  " 增加行文本对象: l   dal yal cil
-  Plug 'kana/vim-textobj-line'
-  " 增加文件文本对象: e   dae yae cie
-  Plug 'kana/vim-textobj-entire'
-  " 增加缩进文本对象: i   dai yai cii - 相同缩进属于同一块
-  Plug 'kana/vim-textobj-indent'
   " Ctrl+Shift+F功能
-  Plug 'dyng/ctrlsf.vim'
-  nmap <C-f> <Plug>CtrlSFCwordPath
+  " Plug 'dyng/ctrlsf.vim'
+  " nmap <C-f> <Plug>CtrlSFCwordPath
+  nnoremap <C-f> :exe 'Ag!' expand('<cword>')<cr>
 
   "Languages {{{
     " Plug 'sheerun/vim-polyglot', { 'for': ['shenmewanyier','python'] }
@@ -419,7 +411,6 @@ endif
 " }}}
 " {{{ key map
   let mapleader=" "
-  nnoremap <leader>h :exe 'Ag!' expand('<cword>')<cr>
   nmap <silent> <leader>ee :e $MYVIMRC<cr>
   nmap <silent> <leader>cd :cd %:h<cr>
   nmap <expr> <CR> (&buftype is# "quickfix" ? "<CR>" : ":a<CR><CR>.<CR>")
