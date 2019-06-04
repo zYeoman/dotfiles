@@ -237,18 +237,18 @@ endif
     " operators, highlighting, run and ipdb breakpoints)
     " Plug 'klen/python-mode'
     Plug 'vimwiki/vimwiki'
-    Plug 'tpope/vim-markdown'
-    let g:markdown_folding = 1
-    let g:markdown_fenced_languages = ['verilog','python', 'matlab']
+    " Plug 'tpope/vim-markdown'
+    " let g:markdown_folding = 1
+    " let g:markdown_fenced_languages = ['verilog','python', 'matlab']
     Plug 'zYeoman/vim-jekyll'
     let g:jekyll_post_extension = '.md'
     let g:jekyll_post_filetype = 'markdown'
-    " Plug 'plasticboy/vim-markdown'
+    Plug 'plasticboy/vim-markdown'
     "Vim-markdown {{{
       " LeTeX math
-      " let g:vim_markdown_math=1
+      let g:vim_markdown_math=1
       " Highlight YAML frontmatter
-      " let g:vim_markdown_frontmatter=1
+      let g:vim_markdown_frontmatter=1
     " }}}
     " Plug 'gabrielelana/vim-markdown'
   " }}}
