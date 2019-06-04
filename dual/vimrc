@@ -205,6 +205,8 @@ endif
   " :Ag [options] pattern [directory]
   " :Ag FooBar foo/**/*.py 等同于 :Ag -G foo/.*/[^/]*\.py$ FooBar
   endif
+  " [] 工具
+  Plug 'tpope/vim-unimpaired'
   " 对齐 {{{
   Plug 'vim-scripts/Align'
   let g:loaded_AlignMapsPlugin=1
@@ -475,7 +477,6 @@ endif
   " https://vi.stackexchange.com/questions/16173/how-to-remap-w-to-up
   cnoreabbrev <expr> w getcmdtype() == ":" && getcmdline() =~ '^w$' ? 'up' : 'w'
   cnoreabbrev <expr> x getcmdtype() == ":" && getcmdline() == 'x' ? 'Kwbd' : 'x'
-  nnoremap p p=`]
   " }}}
 " }}}
 " Auto-pairs {{{
