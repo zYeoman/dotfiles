@@ -1,59 +1,67 @@
 [filter "lfs"]
-    clean = git-lfs clean %f
-    smudge = git-lfs smudge %f
-    required = true
+  clean = git-lfs clean %f
+  smudge = git-lfs smudge %f
+  required = true
 [user]
-    name = Yongwen Zhuang
-    email = zyeoman@163.com
-    signingkey = 80A97CBB
+  name = Yongwen Zhuang
+  email = zyeoman@163.com
+	signingkey = 4337D8FFADD44B0FE7F6DF65DE863DE9442AFD2C
 [core]
-    quotepath = false
-    editor = vim
-    whitespace = =
-    excludesfile = ~/.gitignore
-    pager = diff-so-fancy | less --tabs=4 -RFX
+  quotepath = false
+  editor = vim
+  whitespace = =
+  excludesfile = ~/.gitignore
+  pager = diff-so-fancy | less --tabs=4 -RFX
 [url "https://github"]
-    insteadOf = git://github
+  insteadOf = git://github
 [http]
 [https]
 [credential]
-    helper = store
+  helper = store
 [push]
-    default = simple
+  default = simple
+  followTag = true
 [commit]
-    template = ~/.gitmessage
+  template = ~/.gitmessage
+  gpgSign = true
 [help]
-    autocorrect = 10
+  autocorrect = 10
+[merge]
+  ff=only
 [alias]
   ; 来自 https://gggritso.com/human-git-aliases
-    hist = "log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)' --all"
-    discard = checkout --
-    precommit = diff --cached --diff-algorithm=minimal -w
-    unstage = reset -q HEAD --
-    uncommit = reset --mixed HEAD~
-    unmerged = diff --name-only --diff-filter=U
-    amend = commit --amend
-    pushall = !git remote | xargs -L1 git push --all
-    nevermind = !git reset --hard HEAD && git clean -d -f
-    remotes = remote -v
+  hist = "log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ai)%C(reset) %C(white)%s%C(reset) - %C(magenta)%an%C(reset)%C(bold yellow)%d%C(reset)' --all"
+  ; hist = "log --graph --date=relative --abbrev-commit --decorate --oneline --all"
+  discard = checkout --
+  precommit = diff --cached --diff-algorithm=minimal -w
+  unstage = reset -q HEAD --
+  uncommit = reset --mixed HEAD~
+  unmerged = diff --name-only --diff-filter=U
+  amend = commit --amend
+  pushall = !git remote | xargs -L1 git push --all
+  nevermind = !git reset --hard HEAD && git clean -d -f
+  remotes = remote -v
+  st = status -sb
 [init]
-    templatedir = ~/.gittemplate
+  templatedir = ~/.gittemplate
 [color]
-    diff = auto
-    status = auto
-    branch = auto
-    interactive = auto
-	ui = true
-    pager = true
+  diff = auto
+  status = auto
+  branch = auto
+  interactive = auto
+  ui = true
+  pager = true
 [color "diff-highlight"]
-	oldNormal = red bold
-	oldHighlight = red bold 52
-	newNormal = green bold
-	newHighlight = green bold 22
+  oldNormal = red bold
+  oldHighlight = red bold 52
+  newNormal = green bold
+  newHighlight = green bold 22
 [color "diff"]
-	meta = yellow
-	frag = magenta bold
-	commit = yellow bold
-	old = red bold
-	new = green bold
-	whitespace = red reverse
+  meta = yellow
+  frag = magenta bold
+  commit = yellow bold
+  old = red bold
+  new = green bold
+  whitespace = red reverse
+[rebase]
+	autostash = true
