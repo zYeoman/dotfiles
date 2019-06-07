@@ -4,6 +4,7 @@ scriptencoding utf-8
 " Last Modified: 2019-05-23 19:59 +0800
 
 " Startup {{{
+  let mapleader=" "
   if has('autocmd')
     " Remove ALL autocommand for the current group
     au!
@@ -81,6 +82,7 @@ if !exists('g:VimrcIsLoad')
 endif
 " }}}
 " {{{ VimPlug
+  " {{{ Install VimPlug
   let hazVimPlugInstalled=1
   if isWindows
     set shellxquote=
@@ -99,6 +101,7 @@ endif
     silent execute g:install_vimplug
     let hazVimPlugInstalled=0
   endif
+  " }}}
 
   "     Plug参数说明
        " | Option                  | Description                          |
@@ -112,6 +115,7 @@ endif
        " | `for`                   | 按需加载：文件类型                   |
        " | `frozen`                | 除非显式指定，否则不更新             |
   "
+  " {{{ All Plug
   call plug#begin(yeo_vimroot . '/plugged')
   " 扩展VIM % g%匹配功能 {{{
   " 映射     描述
@@ -119,44 +123,133 @@ endif
   " g%       反向匹配
   " [%       定位块首
   " ]%       定位块尾
-  Plug 'tmhedberg/matchit', { 'for': ['html', 'xml'] }
+    Plug 'tmhedberg/matchit', { 'for': ['html', 'xml'] }
   " }}}
-  Plug 'octol/vim-cpp-enhanced-highlight'
-  Plug 'majutsushi/tagbar'
-  Plug 'lvht/tagbar-markdown'
-  " Repeat -- 支持普通模式使用"."来重复执行一些插件的命令
-  Plug 'tpope/vim-repeat'
-  " 启动页面，包括最近使用的文件等
-  Plug 'mhinz/vim-startify'
-  " 文件查找 ,f 查找函数
-  if isWindows
-    Plug 'Yggdroot/LeaderF', { 'do': '.\install.bat' }
-  else
-    Plug 'Yggdroot/LeaderF', { 'do': './install.sh' }
-    Plug 'chrisbra/SudoEdit.vim'
-  endif
-  let g:Lf_MruMaxFiles = 233
-  let g:Lf_WindowHeight=0.3
-  let g:Lf_WildIgnore = {
-    \ 'dir': ['.svn','.git','.hg'],
-    \ 'file': ['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]']
-    \}
-  " 搜索 TODO,FIXME,XXX, 生成TaskList
-  Plug 'fisadev/FixedTaskList.vim'
-  Plug 'haya14busa/is.vim'
-  " Expand v 连点v扩展选择
-  " 不如使用viw, vi',V等操作
-  " Plug 'terryma/vim-expand-region'
-  " 边界移动，C-j C-k
-  " Plug 'haya14busa/vim-edgemotion'
-  " map <C-j> <Plug>(edgemotion-j)
-  " map <C-k> <Plug>(edgemotion-k)
-  " Git 显示修改
-  Plug 'mhinz/vim-signify'
-  " 打开文件时自动创建没有的文件夹
-  Plug 'pbrisbin/vim-mkdir'
-  " 支持更多的ci,ca,cd等操作(包括‘“'",;:+=-等等)
-  Plug 'wellle/targets.vim'
+  " Display {{{
+  " 优化显示，包括配色、AirLine、标记
+    Plug 'octol/vim-cpp-enhanced-highlight'
+    " Colorscheme
+    Plug 'morhetz/gruvbox'
+    Plug 'flazz/vim-colorschemes'
+    " Airline - 更轻的vim-powerline替代品 {{{
+      Plug 'vim-airline/vim-airline'
+      Plug 'vim-airline/vim-airline-themes'
+      let g:airline_powerline_fonts = 1
+      let g:airline_theme = 'base16color'
+      let g:airline#extensions#tabline#enabled = 1
+      let g:airline#extensions#tabline#formatter = 'unique_tail'
+      let g:airline#extensions#tabline#buffer_idx_mode = 1
+      let g:airline#extensions#tagbar#enabled = 1
+    " }}}
+    " Git 显示修改
+    Plug 'mhinz/vim-signify'
+    "Signify {{{
+      " this first setting decides in which order try to guess your current vcs
+      " UPDATE it to reflect your preferences, it will speed up opening files
+      let g:signify_vcs_list = ['git']
+      let g:signify_vcs_cmds = {
+          \ 'git': 'git diff --no-color --no-ext-diff -w -U0 -- %f' }
+      " mappings to jump to changed blocks
+      nmap <leader>gn <plug>(signify-next-hunk)
+      nmap <leader>gp <plug>(signify-prev-hunk)
+      nmap <leader>gg :SignifyFold<cr>
+      command! GitFold SignifyFold!
+    " }}}
+    " Mark显示
+    Plug 'kshenoy/vim-signature'
+    " Paint css colors with the real color
+    Plug 'lilydjwg/colorizer', { 'for': [ 'css', 'html', 'less', 'sass', 'scss', 'xml', 'xsd', 'xsl', 'xslt', 'mustache' ] }
+  " }}}
+  " Window {{{
+  " 添加新窗口
+    " F9 tagbar
+    nnoremap <silent> <F8> :TagbarToggle<CR>
+    Plug 'majutsushi/tagbar'
+    Plug 'lvht/tagbar-markdown'
+    " 搜索 TODO,FIXME,XXX, 生成TaskList
+    " F7 List
+    Plug 'fisadev/FixedTaskList.vim'
+    nnoremap <silent> <F7> :TaskList<CR>
+    " F6 NerdTree
+    Plug 'scrooloose/nerdtree'
+    nnoremap <silent> <F6> :NERDTreeToggle<CR>
+    " F10 RUN
+    Plug 'thinca/vim-quickrun'
+    nnoremap <silent> <F10> :QuickRun<CR>
+  " }}}
+  " Misc {{{
+  " 实用工具
+    " 自动配对
+    Plug 'spf13/vim-autoclose'
+    " Win Resize {{{
+    " 使用C-e hjkl设置窗口大小
+      Plug 'simeji/winresizer'
+      let g:winresizer_gui_enable = 1
+    " }}}
+    " gcc注释
+    Plug 'tpope/vim-commentary'
+    " 支持更多的ci,ca,cd等操作(包括‘“'",;:+=-等等)
+    Plug 'wellle/targets.vim'
+    " C-u C-d smooth-scroll
+    Plug 'yuttie/comfortable-motion.vim'
+    " AsyncRun {{{
+      Plug 'skywind3000/asyncrun.vim'
+      let g:asyncrun_open=8
+      nnoremap <C-r> :AsyncRun<Space>
+    " }}}
+    " Repeat -- 支持普通模式使用"."来重复执行一些插件的命令
+    Plug 'tpope/vim-repeat'
+    " <leader>f and SudoEdit{{{
+      " 快速跳转查找函数
+      if isWindows
+        Plug 'Yggdroot/LeaderF', { 'do': '.\install.bat' }
+      else
+        Plug 'Yggdroot/LeaderF', { 'do': './install.sh' }
+        Plug 'chrisbra/SudoEdit.vim'
+      endif
+      nnoremap <silent> <leader>m :LeaderfMru<cr>
+      nnoremap <silent> <leader>l :LeaderfLine<cr>
+      nnoremap <silent> <leader>t :LeaderfFunction<cr>
+      nnoremap <silent> <leader>b :LeaderfBuffer<cr>
+      let g:Lf_MruMaxFiles = 233
+      let g:Lf_WindowHeight=0.3
+      let g:Lf_WildIgnore = {
+              \ 'dir': ['.svn','.git','.hg'],
+              \ 'file': ['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]','*.zip','*.tar.*']
+              \}
+    " }}}
+    " [] 工具 vim-unimpaired {{{
+      Plug 'tpope/vim-unimpaired'
+      " [] l: 错误跳转，支持ALE
+    " }}}
+    " 对齐 {{{
+      Plug 'vim-scripts/Align'
+      let g:loaded_AlignMapsPlugin=1
+    " }}}
+    " 回到退出时的位置
+    Plug 'farmergreg/vim-lastplace'
+    " 打开文件时自动创建没有的文件夹
+    Plug 'pbrisbin/vim-mkdir'
+    " Improve search {{{
+      Plug 'haya14busa/is.vim'
+      " Vim incsearch
+      let g:incsearch#auto_nohlsearch = 1
+    " }}}
+    " 全局文内搜索 {{{
+      if s:hasAg
+        Plug 'rking/ag.vim'
+        let g:ag_prg="ag --vimgrep --smart-case -W 128"
+        nnoremap <C-f> :exe 'Ag!' expand('<cword>')<cr>
+        " :Ag [options] pattern [directory]
+        " :Ag FooBar foo/**/*.py 等同于 :Ag -G foo/.*/[^/]*\.py$ FooBar
+      endif
+    " }}}
+  " }}}
+  " Init {{{
+  " 初始化内容
+    " 启动页面，包括最近使用的文件等
+    Plug 'mhinz/vim-startify'
+  " }}}
   Plug 'dhruvasagar/vim-table-mode'
 
   " 自动填充 {{{
@@ -173,60 +266,21 @@ endif
     Plug 'tomtom/tlib_vim'
     Plug 'SirVer/ultisnips'
     Plug 'honza/vim-snippets'
-    " 新文件Template
-    Plug 'aperezdc/vim-template'
+    " Vim-templates {{{
+      Plug 'aperezdc/vim-template'
+      let g:username="Yongwen Zhuang"
+      let g:email="zyeoman@163.com"
+    " }}}
     " Emmet
     Plug 'mattn/emmet-vim', { 'for': [ 'css', 'html', 'less', 'sass', 'scss', 'xml', 'xsd', 'xsl', 'xslt', 'mustache','vue' ] }
     imap   <C-y><C-y>   <plug>(emmet-expand-abbr)
-    " Paint css colors with the real color
-    Plug 'lilydjwg/colorizer', { 'for': [ 'css', 'html', 'less', 'sass', 'scss', 'xml', 'xsd', 'xsl', 'xslt', 'mustache' ] }
   " }}}
-  " 自动配对
-  Plug 'vim-scripts/auto-pairs-gentle'
-  " Win Resize 使用C-e hjkl设置窗口大小
-  Plug 'simeji/winresizer'
-  " AsyncRun {{{
-  Plug 'skywind3000/asyncrun.vim'
-  let g:asyncrun_open=8
-  nnoremap <C-r> :AsyncRun<Space>
-  nnoremap U <C-r>
-  " }}}
-  " Colorscheme
-  Plug 'morhetz/gruvbox'
-  Plug 'flazz/vim-colorschemes'
-  " Airline - 更轻的vim-powerline替代品
-  Plug 'vim-airline/vim-airline'
-  Plug 'vim-airline/vim-airline-themes'
-  " gcc注释
-  Plug 'tpope/vim-commentary'
-  " 全局文内搜索
-  if s:hasAg
-    Plug 'rking/ag.vim'
-  " :Ag [options] pattern [directory]
-  " :Ag FooBar foo/**/*.py 等同于 :Ag -G foo/.*/[^/]*\.py$ FooBar
-  endif
-  " [] 工具
-  Plug 'tpope/vim-unimpaired'
-  " 对齐 {{{
-  Plug 'vim-scripts/Align'
-  let g:loaded_AlignMapsPlugin=1
-  " }}}
-  Plug 'scrooloose/nerdtree'
-  " Mark显示
-  Plug 'kshenoy/vim-signature'
-  " F10 RUN
-  Plug 'thinca/vim-quickrun'
   " 中文Doc
   Plug 'vimcn/vimcdoc'
   " 使用:Dox :DoxAuthor添加描述
   Plug 'vim-scripts/DoxygenToolkit.vim'
   let g:load_doxygen_syntax=1
-  " 回到退出时的位置
-  Plug 'farmergreg/vim-lastplace'
-  " Ctrl+Shift+F功能
-  " Plug 'dyng/ctrlsf.vim'
-  " nmap <C-f> <Plug>CtrlSFCwordPath
-  nnoremap <C-f> :exe 'Ag!' expand('<cword>')<cr>
+    nnoremap U <C-r>
 
   "Languages {{{
     " Plug 'sheerun/vim-polyglot', { 'for': ['shenmewanyier','python'] }
@@ -237,25 +291,32 @@ endif
     Plug 'w0rp/ale'
     " Python mode (indentation, doc, refactor, lints, code checking, motion and
     " operators, highlighting, run and ipdb breakpoints)
-    " Plug 'klen/python-mode'
-    Plug 'vimwiki/vimwiki'
-    " Plug 'tpope/vim-markdown'
-    " let g:markdown_folding = 1
-    " let g:markdown_fenced_languages = ['verilog','python', 'matlab']
-    Plug 'zYeoman/vim-jekyll'
-    let g:jekyll_post_extension = '.md'
-    let g:jekyll_post_filetype = 'markdown'
-    Plug 'plasticboy/vim-markdown'
-    "Vim-markdown {{{
+    " Plug 'python-mode/python-mode'
+    " VimWiki {{{
+      Plug 'vimwiki/vimwiki'
+      map <Leader>ww <Plug>VimwikiIndex
+      let g:vimwiki_list = [{'path':'~/tik/','syntax':'markdown'}]
+    " }}}
+    " Vim-Jekyll {{{
+      Plug 'zYeoman/vim-jekyll'
+      let g:jekyll_post_extension = '.md'
+      let g:jekyll_post_filetype = 'markdown'
+    " }}}
+    " Vim-markdown {{{
+      Plug 'plasticboy/vim-markdown'
+      " Help
+      "   :Toc create a TOC vertical window
+      "   :TableFormat format table use [tabular]
+      "   [[  ]] Header jump
       " LeTeX math
       let g:vim_markdown_math=1
       " Highlight YAML frontmatter
       let g:vim_markdown_frontmatter=1
     " }}}
-    " Plug 'gabrielelana/vim-markdown'
   " }}}
 
   call plug#end()
+  " }}}
 
   if hazVimPlugInstalled == 0
     echo "Installing Plugins, please ignore key map error messages"
@@ -264,14 +325,79 @@ endif
   endif
 " }}}
 " Functions {{{
-  " --- Strip trailing whitespace ---
-  function! StripWhitespace ()
-    let save_cursor = getpos(".")
-    let old_query = getreg('/')
-    :%s/\s\+$//e
-    call setpos('.', save_cursor)
-    call setreg('/', old_query)
+  " Kwbd {{{
+  " here is a more exotic version of my original Kwbd script
+  " delete the buffer; keep windows; create a scratch buffer if no buffers left
+  function s:Kwbd(kwbdStage)
+    if(a:kwbdStage == 1)
+      if(!buflisted(winbufnr(0)))
+        bd!
+        return
+      endif
+      let s:kwbdBufNum = bufnr("%")
+      let s:kwbdWinNum = winnr()
+      windo call s:Kwbd(2)
+      execute s:kwbdWinNum . 'wincmd w'
+      let s:buflistedLeft = 0
+      let s:bufFinalJump = 0
+      let l:nBufs = bufnr("$")
+      let l:i = 1
+      while(l:i <= l:nBufs)
+        if(l:i != s:kwbdBufNum)
+          if(buflisted(l:i))
+            let s:buflistedLeft = s:buflistedLeft + 1
+          else
+            if(bufexists(l:i) && !strlen(bufname(l:i)) && !s:bufFinalJump)
+              let s:bufFinalJump = l:i
+            endif
+          endif
+        endif
+        let l:i = l:i + 1
+      endwhile
+      if(!s:buflistedLeft)
+        if(s:bufFinalJump)
+          windo if(buflisted(winbufnr(0))) | execute "b! " . s:bufFinalJump | endif
+        else
+          enew
+          let l:newBuf = bufnr("%")
+          windo if(buflisted(winbufnr(0))) | execute "b! " . l:newBuf | endif
+        endif
+        execute s:kwbdWinNum . 'wincmd w'
+      endif
+      if(buflisted(s:kwbdBufNum) || s:kwbdBufNum == bufnr("%"))
+        execute "bd! " . s:kwbdBufNum
+      endif
+      if(!s:buflistedLeft)
+        set buflisted
+        set bufhidden=delete
+        set buftype=
+        setlocal noswapfile
+      endif
+    else
+      if(bufnr("%") == s:kwbdBufNum)
+        let prevbufvar = bufnr("#")
+        if(prevbufvar > 0 && buflisted(prevbufvar) && prevbufvar != s:kwbdBufNum)
+          b #
+        else
+          bn
+        endif
+      endif
+    endif
   endfunction
+
+  command! Kwbd call s:Kwbd(1)
+  nnoremap <silent> <Plug>Kwbd :<C-u>Kwbd<CR>
+  " }}}
+  " Strip Whitespace {{{
+    " --- Strip trailing whitespace ---
+    function! StripWhitespace ()
+      let save_cursor = getpos(".")
+      let old_query = getreg('/')
+      :%s/\s\+$//e
+      call setpos('.', save_cursor)
+      call setreg('/', old_query)
+    endfunction
+  " }}}
   function! CleanBufs()
     for bufNr in filter(range(1, bufnr('$')),
       \ 'buflisted(v:val) && !bufloaded(v:val)')
@@ -308,38 +434,30 @@ endif
   " sdcv translate
   " http://renwolang521.iteye.com/blog/1317789
   function! Mydict()
-    let expl=system('sdcv -u 朗道英汉字典 -n ' .
-          \  expand("<cword>"))
-    windo if
-          \ expand("%")=="dict-tmp" |
-          \ q!|endif
-    10sp dict-tmp
-    setlocal buftype=nofile bufhidden=hide noswapfile
-    1s/^/\=expl/
-    9
+    cexpr system('sdcv -u 朗道英汉字典 -n ' . expand("<cword>"))
+    copen
   endfunction
   nmap <C-t> :call Mydict()<cr>
 " }}}
 " General {{{
-  set mouse=
+  set mouse=n
   set nocompatible
-  set noswapfile
-  set nobackup
   set history=1024
+  set cmdheight=2
   set noautochdir
   set ttyfast
-  " Auto reload file
-  set autoread
   set whichwrap=b,s,<,>,[,],h,l
-  " 补全列表显示
-  set wildmenu
-  set wildmode=list:longest,full
-  " Ignore file config
-  set wildignore=*.o,*.obj,*~ "stuff to ignore when tab completing
-  set wildignore+=*/tmp/*,*.so,*.swp,*.zip,*DS_Store*,vendor/rails/**,vendor/cache/**,*.gem,log/**,tmp/**
-  set wildignore+=*.png,*.jpg,*.gif,*.webp,*.psd,*.exe,*.sketch
-  set wildignore+=*.so,*.swp,*.zip,*/.Trash/**,*.pdf,*.dmg,*/Library/**,*/.rbenv/**
-  set wildignore+=*/.nx/**,*.app,*.git,.git,.svn
+  " 补全列表显示 {{{
+    set wildmenu
+    set wildmode=list:longest,full
+  " }}}
+  " Ignore file config {{{
+    set wildignore+=*.o,*.obj,*~ "stuff to ignore when tab completing
+    set wildignore+=*/tmp/*,*.so,*.swp,*.zip,*DS_Store*,vendor/rails/**,vendor/cache/**,*.gem,log/**,tmp/**
+    set wildignore+=*.png,*.jpg,*.gif,*.webp,*.psd,*.exe,*.sketch
+    set wildignore+=*.so,*.swp,*.zip,*/.Trash/**,*.pdf,*.dmg,*/Library/**,*/.rbenv/**
+    set wildignore+=*/.nx/**,*.app,*.git,.git,.svn
+  " }}}
   " TAB替换空格
   set smarttab
   " 简写消息
@@ -355,6 +473,10 @@ endif
   if !isdirectory(yeo_undodir)
     call mkdir(yeo_undodir, 'p')
   endif
+  set backup
+  let &backupdir = yeo_undodir
+  set backupext=-vimbackup
+  set backupskip=
   let &undodir = yeo_undodir
   set undofile
 " }}}
@@ -365,23 +487,25 @@ endif
   " 显示行尾空格和TAB
   set list
   set listchars=tab:>-,trail:-
-  " line number
-  set number
-  set relativenumber
-  autocmd FocusLost * :set norelativenumber number
-  autocmd FocusGained * :set relativenumber
-  " 插入模式下用绝对行号, 普通模式下用相对
-  autocmd InsertEnter * :set norelativenumber number
-  autocmd InsertLeave * :set relativenumber
+  " line number {{{
+    set number
+    set relativenumber
+    autocmd FocusLost * :set norelativenumber number
+    autocmd FocusGained * :set relativenumber
+    " 插入模式下用绝对行号, 普通模式下用相对
+    autocmd InsertEnter * :set norelativenumber number
+    autocmd InsertLeave * :set relativenumber
+  " }}}
   " 使用:browse命令时打开的文件夹
   set browsedir=buffer
   set cursorline
   set ruler
-  " search
-  set ignorecase
-  set smartcase
-  set incsearch
-  set hlsearch
+  " search {{{
+    set ignorecase
+    set smartcase
+    set incsearch
+    set hlsearch
+  " }}}
   " Scroll
   set scrolloff=5
   " color
@@ -412,26 +536,14 @@ endif
   syntax on
 " }}}
 " {{{ key map
-  let mapleader=" "
   nmap <silent> <leader>ee :e $MYVIMRC<cr>
   nmap <silent> <leader>cd :cd %:h<cr>
-  nmap <expr> <CR> (&buftype is# "quickfix" ? "<CR>" : ":a<CR><CR>.<CR>")
+  " nmap <expr> <CR> (&buftype is# "quickfix" ? "<CR>" : ":a<CR><CR>.<CR>")
   " 使用leader q来打开关闭quickfix
   nnoremap <silent> <leader>q :call <SID>ToggleQf()<cr>
-  " nnoremap <silent> <leader>h :set nohlsearch<cr>
-  nnoremap <silent> <leader>y :Goyo<cr>
-  nnoremap <silent> <leader>m :LeaderfMru<cr>
-  nnoremap <silent> <leader>l :LeaderfLine<cr>
-  nnoremap <silent> <leader>t :LeaderfFunction<cr>
-  nnoremap <silent> <leader>b :LeaderfBuffer<cr>
-    let g:Lf_WildIgnore = {
-            \ 'dir': ['.svn','.git','.hg'],
-            \ 'file': ['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]','*.zip','*.tar.*']
-            \}
   nnoremap <silent> <leader>- o--------------------------------------------------------
   nnoremap / :set hlsearch<cr>/
   nnoremap <silent> <leader>p :setlocal paste! paste?<cr>
-  " nnoremap <TAB> :bn<cr>
   " c-v c-c 粘贴复制
   imap <C-v> <esc>"+pa
   vmap <C-c> "+y
@@ -453,13 +565,15 @@ endif
   nnoremap k gk
   nnoremap H ^
   nnoremap L $
-  " 正常模式下 <C-e> j,k,h,l 调整分割窗口大小
-  " 使用simeji/winresizer实现，<C-e>之后开始
   " Tab操作
   nmap tn :tabnew
   nmap tc :tabclose<cr>
   nmap th :tabp<cr>
   nmap tl :tabn<cr>
+  nmap <C-k> <C-w>k
+  nmap <C-j> <c-w>j
+  nmap <C-h> <C-w>h
+  nmap <C-l> <c-w>l
   " }}}
   " Visual Mode Map {{{
   vnoremap < <gv
@@ -478,13 +592,6 @@ endif
   cnoreabbrev <expr> w getcmdtype() == ":" && getcmdline() =~ '^w$' ? 'up' : 'w'
   cnoreabbrev <expr> x getcmdtype() == ":" && getcmdline() == 'x' ? 'Kwbd' : 'x'
   " }}}
-" }}}
-" Auto-pairs {{{
-  " let g:AutoPairs['<'] = '>'
-  " let g:AutoPairs['《'] = '》'
-  " let g:AutoPairs['（'] = '）'
-  " let g:AutoPairs['“'] = '”'
-  " let g:AutoPairs['‘'] = '’'
 " }}}
 " Complete Settings {{{
   set complete+=k
@@ -511,25 +618,13 @@ endif
   " 跳转到定义处, 分屏打开
   let g:ycm_goto_buffer_command = 'horizontal-split'
   let g:ycm_register_as_syntastic_checker = 0
-  nnoremap <leader>jd :YcmCompleter GoToDefinitionElseDeclaration<CR>
-  nnoremap <leader>gd :YcmCompleter GoToDeclaration<CR>
 
   " better key bindings for UltiSnipsExpandTrigger
   let g:UltiSnipsExpandTrigger = "<tab>"
   " let g:UltiSnipsJumpForwardTrigger = "<tab>"
   " let g:UltiSnipsJumpBackwardTrigger = "<s-tab>"
 " }}}
-" Airline Settings {{{
-  let g:airline_powerline_fonts = 1
-  let g:airline_theme = 'base16color'
-  let g:airline#extensions#tabline#enabled = 1
-  let g:airline#extensions#tabline#formatter = 'unique_tail'
-  let g:airline#extensions#tabline#buffer_idx_mode = 1
-  let g:airline#extensions#tagbar#enabled = 1
-" }}}
 "ale {{{
-nmap <silent> <leader>k <Plug>(ale_previous)
-nmap <silent> <leader>j <Plug>(ale_next)
   let g:ale_c_parse_makefile = 1
   let g:ale_sign_column_always = 1
   let g:ale_fix_on_save = 1
@@ -552,45 +647,6 @@ nmap <silent> <leader>j <Plug>(ale_next)
   let g:ale_sign_error = 'xx'
   let g:ale_sign_warning = '!!'
   let g:airline#extensions#ale#enabled = 1
-  nmap <C-k> <C-w>k
-  nmap <C-j> <c-w>j
-  nmap <C-h> <C-w>h
-  nmap <C-l> <c-w>l
-" }}}
-"Signify {{{
-  " this first setting decides in which order try to guess your current vcs
-  " UPDATE it to reflect your preferences, it will speed up opening files
-  let g:signify_vcs_list = ['git']
-  let g:signify_vcs_cmds = {
-      \ 'git': 'git diff --no-color --no-ext-diff -w -U0 -- %f' }
-  let g:vimwiki_list = [{'path':'~/tik/','syntax':'markdown'}]
-  " mappings to jump to changed blocks
-  nmap <leader>gn <plug>(signify-next-hunk)
-  nmap <leader>gp <plug>(signify-prev-hunk)
-  nmap <leader>gg :SignifyFold<cr>
-" }}}
-"Vim-templates {{{
-  let g:username="Yongwen Zhuang"
-  let g:email="zyeoman@163.com"
-" }}}
-" Other Settings {{{ "
-  let g:winresizer_gui_enable = 1
-  " Vim incsearch
-  let g:vim_search_pulse_disable_auto_mappings = 1
-  let g:incsearch#auto_nohlsearch = 1
-  " vim-cool自动关闭highlight
-" }}}
-" Plugin Key Map {{{
-  " mapping
-  vmap v <Plug>(expand_region_expand)
-  vmap <C-v> <Plug>(expand_region_shrink)
-  map <Leader>ww <Plug>VimwikiIndex
-  nmap <F2> :NERDTreeToggle<CR>
-  nmap <F6> :cnext<CR>
-  nmap <S-F6> :cprevious<CR>
-  nmap <F7> :TaskList<CR>
-  nmap <F10> :QuickRun<CR>
-  nmap <F11> :call FullscreenToggle()<CR>
 " }}}
 " source {{{
   " source $VIMRUNTIME/delmenu.vim
@@ -607,6 +663,7 @@ if isWindows
     function! FullscreenToggle()
       call libcallnr(g:MyVimLib, "ToggleFullScreen", 1)
     endfunction
+    nmap <F11> :call FullscreenToggle()<CR>
     autocmd GUIEnter * call libcallnr(g:MyVimLib, "SetAlpha", 240)
   else
     set nocursorline
@@ -625,68 +682,5 @@ else
   let g:VimrcIsLoad = g:VimrcIsLoad + 1
 endif
 " }}}
-"here is a more exotic version of my original Kwbd script
-"delete the buffer; keep windows; create a scratch buffer if no buffers left
-function s:Kwbd(kwbdStage)
-  if(a:kwbdStage == 1)
-    if(!buflisted(winbufnr(0)))
-      bd!
-      return
-    endif
-    let s:kwbdBufNum = bufnr("%")
-    let s:kwbdWinNum = winnr()
-    windo call s:Kwbd(2)
-    execute s:kwbdWinNum . 'wincmd w'
-    let s:buflistedLeft = 0
-    let s:bufFinalJump = 0
-    let l:nBufs = bufnr("$")
-    let l:i = 1
-    while(l:i <= l:nBufs)
-      if(l:i != s:kwbdBufNum)
-        if(buflisted(l:i))
-          let s:buflistedLeft = s:buflistedLeft + 1
-        else
-          if(bufexists(l:i) && !strlen(bufname(l:i)) && !s:bufFinalJump)
-            let s:bufFinalJump = l:i
-          endif
-        endif
-      endif
-      let l:i = l:i + 1
-    endwhile
-    if(!s:buflistedLeft)
-      if(s:bufFinalJump)
-        windo if(buflisted(winbufnr(0))) | execute "b! " . s:bufFinalJump | endif
-      else
-        enew
-        let l:newBuf = bufnr("%")
-        windo if(buflisted(winbufnr(0))) | execute "b! " . l:newBuf | endif
-      endif
-      execute s:kwbdWinNum . 'wincmd w'
-    endif
-    if(buflisted(s:kwbdBufNum) || s:kwbdBufNum == bufnr("%"))
-      execute "bd! " . s:kwbdBufNum
-    endif
-    if(!s:buflistedLeft)
-      set buflisted
-      set bufhidden=delete
-      set buftype=
-      setlocal noswapfile
-    endif
-  else
-    if(bufnr("%") == s:kwbdBufNum)
-      let prevbufvar = bufnr("#")
-      if(prevbufvar > 0 && buflisted(prevbufvar) && prevbufvar != s:kwbdBufNum)
-        b #
-      else
-        bn
-      endif
-    endif
-  endif
-endfunction
 
-command! Kwbd call s:Kwbd(1)
-command! GitFold SignifyFold!
-nnoremap <silent> <Plug>Kwbd :<C-u>Kwbd<CR>
-
-" Create a mapping (e.g. in your .vimrc) like this:
 " vim:expandtab shiftwidth=2 tabstop=8 textwidth=72
