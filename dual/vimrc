@@ -133,32 +133,23 @@ endif
     Plug 'flazz/vim-colorschemes'
     " Airline - 更轻的vim-powerline替代品 {{{
       Plug 'vim-airline/vim-airline'
-      Plug 'vim-airline/vim-airline-themes'
+      " Plug 'vim-airline/vim-airline-themes'
+      " let g:airline_theme = 'base16color'
       let g:airline_powerline_fonts = 1
-      let g:airline_theme = 'base16color'
       let g:airline#extensions#tabline#enabled = 1
       let g:airline#extensions#tabline#formatter = 'unique_tail'
       let g:airline#extensions#tabline#buffer_idx_mode = 1
       let g:airline#extensions#tagbar#enabled = 1
     " }}}
-    " Git 显示修改
-    Plug 'mhinz/vim-signify'
-    "Signify {{{
-      " this first setting decides in which order try to guess your current vcs
-      " UPDATE it to reflect your preferences, it will speed up opening files
-      let g:signify_vcs_list = ['git']
-      let g:signify_vcs_cmds = {
-          \ 'git': 'git diff --no-color --no-ext-diff -w -U0 -- %f' }
-      " mappings to jump to changed blocks
-      nmap <leader>gn <plug>(signify-next-hunk)
-      nmap <leader>gp <plug>(signify-prev-hunk)
-      nmap <leader>gg :SignifyFold<cr>
-      command! GitFold SignifyFold!
+    "Git 显示修改 {{{
+      Plug 'airblade/vim-gitgutter'
+      Plug 'tpope/vim-fugitive'
+      " [] c 跳转
+      let g:gitgutter_diff_args = '-w'
+      command! GitFold GitGutterFold
     " }}}
     " Mark显示
     Plug 'kshenoy/vim-signature'
-    " Paint css colors with the real color
-    Plug 'lilydjwg/colorizer', { 'for': [ 'css', 'html', 'less', 'sass', 'scss', 'xml', 'xsd', 'xsl', 'xslt', 'mustache' ] }
   " }}}
   " Window {{{
   " 添加新窗口
@@ -180,7 +171,7 @@ endif
   " Misc {{{
   " 实用工具
     " 自动配对
-    Plug 'spf13/vim-autoclose'
+    Plug 'vim-scripts/auto-pairs-gentle'
     " Win Resize {{{
     " 使用C-e hjkl设置窗口大小
       Plug 'simeji/winresizer'
@@ -226,10 +217,6 @@ endif
       Plug 'vim-scripts/Align'
       let g:loaded_AlignMapsPlugin=1
     " }}}
-    " 回到退出时的位置
-    Plug 'farmergreg/vim-lastplace'
-    " 打开文件时自动创建没有的文件夹
-    Plug 'pbrisbin/vim-mkdir'
     " Improve search {{{
       Plug 'haya14busa/is.vim'
       " Vim incsearch
@@ -249,38 +236,62 @@ endif
   " 初始化内容
     " 启动页面，包括最近使用的文件等
     Plug 'mhinz/vim-startify'
+    " 回到退出时的位置
+    Plug 'farmergreg/vim-lastplace'
+    " 打开文件时自动创建没有的文件夹
+    Plug 'pbrisbin/vim-mkdir'
   " }}}
   Plug 'dhruvasagar/vim-table-mode'
 
   " 自动填充 {{{
-    " Install on archlinux
-    " Adding "--system-libclang" to ./install.py
-    Plug 'Valloric/YouCompleteMe'
-    Plug 'rdnetto/YCM-Generator', { 'branch': 'stable' }
-    " Plug 'maralla/completor.vim'
-    " Plug 'kyouryuukunn/completor-necovim'
-    Plug 'ervandew/supertab'
-    " Plug 'asins/vim-dict'
-    " 代码片段
-    Plug 'MarcWeber/vim-addon-mw-utils'
-    Plug 'tomtom/tlib_vim'
-    Plug 'SirVer/ultisnips'
-    Plug 'honza/vim-snippets'
     " Vim-templates {{{
       Plug 'aperezdc/vim-template'
       let g:username="Yongwen Zhuang"
       let g:email="zyeoman@163.com"
     " }}}
-    " Emmet
-    Plug 'mattn/emmet-vim', { 'for': [ 'css', 'html', 'less', 'sass', 'scss', 'xml', 'xsd', 'xsl', 'xslt', 'mustache','vue' ] }
-    imap   <C-y><C-y>   <plug>(emmet-expand-abbr)
+    " Emmet {{{
+      Plug 'mattn/emmet-vim', { 'for': [ 'css', 'html', 'less', 'sass', 'scss', 'xml', 'xsd', 'xsl', 'xslt', 'mustache','vue' ] }
+      imap   <C-y><C-y>   <plug>(emmet-expand-abbr)
+    " }}}
+    Plug 'neoclide/coc.nvim', {'tag': '*', 'do': './install.sh'}
+    let g:coc_global_extensions=["coc-json","coc-css","coc-html","coc-gocode","coc-emoji","coc-syntax", "coc-ultisnips","coc-emmet","coc-yank","coc-word","coc-highlight"]
+    nnoremap <silent> <space>y  :<C-u>CocList -A --normal yank<cr>
+    " Smaller updatetime for CursorHold & CursorHoldI
+    set updatetime=300
+
+    function! s:check_back_space() abort
+      let col = col('.') - 1
+      return !col || getline('.')[col - 1]  =~# '\s'
+    endfunction
+    " Use K to show documentation in preview window
+    nnoremap <silent> K :call <SID>show_documentation()<CR>"
+    function! s:show_documentation()
+      if (index(['vim','help'], &filetype) >= 0)
+        execute 'h '.expand('<cword>')
+      else
+        call CocAction('doHover')
+      endif
+    endfunction
+    " Highlight symbol under cursor on CursorHold
+    autocmd CursorHold * silent call CocActionAsync('highlight')"
+    " Install on archlinux
+    " Adding "--system-libclang" to ./install.py
+    " Plug 'Valloric/YouCompleteMe'
+    " Plug 'rdnetto/YCM-Generator', { 'branch': 'stable' }
+    Plug 'ervandew/supertab'
+    let g:SuperTabDefaultCompletionType = '<C-n>'
+    let g:SuperTabClosePreviewOnPopupClose = 1
+    " 代码片段
+    Plug 'SirVer/ultisnips'
+    Plug 'honza/vim-snippets'
+    " better key bindings for UltiSnipsExpandTrigger
+    let g:UltiSnipsExpandTrigger = "<tab>"
   " }}}
   " 中文Doc
   Plug 'vimcn/vimcdoc'
   " 使用:Dox :DoxAuthor添加描述
   Plug 'vim-scripts/DoxygenToolkit.vim'
   let g:load_doxygen_syntax=1
-    nnoremap U <C-r>
 
   "Languages {{{
     " Plug 'sheerun/vim-polyglot', { 'for': ['shenmewanyier','python'] }
@@ -440,8 +451,9 @@ endif
   nmap <C-t> :call Mydict()<cr>
 " }}}
 " General {{{
-  set mouse=n
+  set mouse=
   set nocompatible
+  set termguicolors
   set history=1024
   set cmdheight=2
   set noautochdir
@@ -461,7 +473,7 @@ endif
   " TAB替换空格
   set smarttab
   " 简写消息
-  set shortmess=atOI
+  set shortmess=atOIc
   " No BOM
   set nobomb
   " Backspace autoindent, end of line, start of insert
@@ -473,10 +485,11 @@ endif
   if !isdirectory(yeo_undodir)
     call mkdir(yeo_undodir, 'p')
   endif
-  set backup
-  let &backupdir = yeo_undodir
-  set backupext=-vimbackup
-  set backupskip=
+  set nobackup
+  set nowritebackup
+  " let &backupdir = yeo_undodir
+  " set backupext=-vimbackup
+  " set backupskip=
   let &undodir = yeo_undodir
   set undofile
 " }}}
@@ -560,6 +573,7 @@ endif
   " }}}
   " Nomal Mode Map {{{
   noremap <Leader><Space> za
+  nnoremap U <C-r>
   " 增强jkHL
   nnoremap j gj
   nnoremap k gk
@@ -596,33 +610,6 @@ endif
 " Complete Settings {{{
   set complete+=k
   set completeopt=menu,menuone
-  " let g:ycm_collect_identifiers_from_comments_and_strings = 1
-  let g:ycm_complete_in_strings=1
-  ""Note: SuperTab 设置
-  let g:ycm_global_ycm_extra_conf = yeo_vimroot . '/plugged/YouCompleteMe/third_party/ycmd/cpp/ycm/.ycm_extra_conf.py'
-  let g:ycm_show_diagnostics_ui = 0
-  let g:ycm_seed_identifiers_with_syntax = 1
-  let g:ycm_confirm_extra_conf = 0
-  " make YCM compatible with UltiSnips (using supertab)
-  let g:ycm_key_list_select_completion = ['<C-n>', '<Down>']
-  let g:ycm_key_list_previous_completion = ['<C-p>', '<Up>']
-  let g:SuperTabDefaultCompletionType = '<C-n>'
-  " let g:SuperTabClosePreviewOnPopupClose = 1
-  " fun! Change_min()
-  "     " Don't strip on these filetypes
-  "     if &ft =~ 'lua\|javascript\|perl'
-  "     else
-  "     endif
-  " endfun
-  " autocmd FileType * call Change_min()
-  " 跳转到定义处, 分屏打开
-  let g:ycm_goto_buffer_command = 'horizontal-split'
-  let g:ycm_register_as_syntastic_checker = 0
-
-  " better key bindings for UltiSnipsExpandTrigger
-  let g:UltiSnipsExpandTrigger = "<tab>"
-  " let g:UltiSnipsJumpForwardTrigger = "<tab>"
-  " let g:UltiSnipsJumpBackwardTrigger = "<s-tab>"
 " }}}
 "ale {{{
   let g:ale_c_parse_makefile = 1
