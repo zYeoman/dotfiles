@@ -47,6 +47,7 @@ if !exists('g:VimrcIsLoad')
   set termencoding=utf-8
   set helplang=en
   language messages en_US.utf-8
+  set termguicolors
   " 输入法
   if has('multi_byte_ime')
     hi Cursor guifg=bg guibg=Orange gui=NONE
