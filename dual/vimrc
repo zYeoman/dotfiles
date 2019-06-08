@@ -479,8 +479,9 @@ endif
   " Backspace autoindent, end of line, start of insert
   set backspace=indent,eol,start
 " }}}
-" Global undo {{{
+" Global undo\swap\nobackup {{{
   " global undo
+  autocmd SwapExists * let v:swapchoice = "o"
   let yeo_undodir = expand(yeo_vimroot . '/undodir')
   if !isdirectory(yeo_undodir)
     call mkdir(yeo_undodir, 'p')

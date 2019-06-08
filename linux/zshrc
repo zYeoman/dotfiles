@@ -36,6 +36,7 @@ export EDITOR='vim'
 # export ARCHFLAGS="-arch x86_64"
 export SSH_KEY_PATH="~/.ssh/rsa_id"
 
+export GOPATH=~/gocode/
 export PATH=$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:$PATH
 export PATH=$(ruby -e "puts Gem.user_dir")/bin:$PATH
 export PATH=$GOPATH/bin:$PATH
@@ -43,7 +44,6 @@ export PATH=$HOME/.local/bin/:$PATH
 export PATH=.:$PATH
 export LC_ALL=zh_CN.UTF-8
 export TERM=xterm-256color
-export GOPATH=~/gocode/
 alias p="proxychains -q"
 alias pg="proxychains -q git"
 
@@ -53,6 +53,7 @@ alias erlang=erl
 alias scheme=csi
 alias def="/usr/bin/sdcv -u 朗道英汉字典 "
 alias pls='sudo $(fc -ln -1)'
+alias ag='ag $* -W 100'
 
 # fzf
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
@@ -129,6 +130,8 @@ function gitrefresh() {
     git pull origin master
     git checkout $B
 }
+
+notica() { curl --data "d:$*" "https://notica.us/?7wA-md3D" ;  }
 
 # alsi # Print linux info
 # export FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git/*"'
