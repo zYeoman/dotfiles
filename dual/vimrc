@@ -40,6 +40,7 @@ scriptencoding utf-8
   augroup END
   " Auto Reload Vimrc
   autocmd BufWritePost $MYVIMRC source $MYVIMRC | AirlineRefresh
+  autocmd BufWritePost vimrc source $MYVIMRC | AirlineRefresh
   autocmd FileType vim set foldmethod=marker
   autocmd FileType cpp setlocal commentstring=//\ %s shiftwidth=2
   autocmd FileType html setlocal shiftwidth=2 tabstop=2
@@ -143,6 +144,8 @@ endif
     " }}}
     "Git 显示修改 {{{
       Plug 'airblade/vim-gitgutter'
+      let g:airline_section_b = '%{get(g:,"coc_git_status", "")}%{get(b:, "coc_git_status", "")}%{get(b:,"coc_git_blame","")}'
+      nnoremap <silent> <leader>cc  :<C-u>CocCommand<CR>
       Plug 'tpope/vim-fugitive'
       " [] c 跳转
       let g:gitgutter_diff_args = '-w'
@@ -170,6 +173,14 @@ endif
   " }}}
   " Misc {{{
   " 实用工具
+    " cs 替换, ds删除, ys添加, yss 全行
+    Plug 'tpope/vim-surround'
+    " Multiple cursors
+    Plug 'terryma/vim-multiple-cursors'
+    " let g:multi_cursor_next_key='<C-n>'
+    " let g:multi_cursor_prev_key='<C-p>'
+    " let g:multi_cursor_skip_key='<C-x>'
+    " let g:multi_cursor_quit_key='<Esc>'
     " 自动配对
     Plug 'vim-scripts/auto-pairs-gentle'
     " Win Resize {{{
@@ -256,6 +267,8 @@ endif
     Plug 'neoclide/coc.nvim', {'tag': '*', 'do': './install.sh'}
     let g:coc_global_extensions=["coc-json","coc-css","coc-html","coc-gocode","coc-emoji","coc-syntax", "coc-ultisnips","coc-emmet","coc-yank","coc-word","coc-highlight"]
     nnoremap <silent> <space>y  :<C-u>CocList -A --normal yank<cr>
+    " Remap for rename current word
+    nmap <leader>rn <Plug>(coc-rename)
     " Smaller updatetime for CursorHold & CursorHoldI
     set updatetime=300
 
@@ -624,12 +637,12 @@ endif
   \  'html': ['prettier'],
   \  'css': ['stylelint'],
   \ }
-  " let g:ale_linters = {
-  " \  'python': ['flake8 --max-line-length=81'],
-  " \  'cpp': ['clang'],
-  " \  'javascript': ['prettier'],
-  " \  'html': ['prettier'],
-  " \ }
+  let g:ale_linters = {
+  \  'python': ['flake8 --max-line-length=81'],
+  \  'cpp': ['clang'],
+  \  'javascript': ['prettier'],
+  \  'html': ['prettier'],
+  \ }
   let g:ale_lint_on_text_changed = 'normal'
   let g:ale_lint_on_insert_leave = 1
   let g:ale_sign_error = 'xx'
