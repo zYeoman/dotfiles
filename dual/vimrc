@@ -1,47 +1,27 @@
 scriptencoding utf-8
 " Title: Vimrc for windows and linux
 " Maintainer: Yeoman Zhuang <zyeoman@163.com>
-" Last Modified: 2019-05-23 19:59 +0800
+" Last Modified: 2019-06-16 12:27
 
 " Startup {{{
   let mapleader=" "
-  if has('autocmd')
-    " Remove ALL autocommand for the current group
-    au!
-  endif
-  if has('gui')
-    let isGUI = 1
-  else
-    let isGUI = 0
-  endif
+  let maplocalleader=" "
   if has('win32')
-    let isWindows = 1
+    let s:vimroot=expand('$HOME/vimfiles')
   else
-    let isWindows = 0
+    let s:vimroot=expand('$HOME/.vim')
   endif
-  "   判定当前是否有 CTags {{{2
-  if executable('ctags')
-    let s:hasCTags=1
-  else
-    let s:hasCTags=0
+  if !isdirectory(s:vimroot)
+    call mkdir(s:vimroot, 'p')
   endif
-  "   }}}
-  "   判定当前是否有 Ag {{{2
-  if executable('ag')
-    let s:hasAg=1
-  else
-    let s:hasAg=0
-  endif
-  "   }}}
-  let yeo_vimroot=expand('$HOME/.vim')
   augroup qf
     autocmd!
     autocmd FileType qf set nobuflisted
   augroup END
   " Auto Reload Vimrc
+  autocmd!
   autocmd BufWritePost $MYVIMRC source $MYVIMRC | AirlineRefresh
   autocmd BufWritePost vimrc source $MYVIMRC | AirlineRefresh
-  autocmd FileType vim set foldmethod=marker
   autocmd FileType cpp setlocal commentstring=//\ %s shiftwidth=2
   autocmd FileType html setlocal shiftwidth=2 tabstop=2
   autocmd FileType python setlocal expandtab shiftwidth=4 softtabstop=4
@@ -73,7 +53,7 @@ if !exists('g:VimrcIsLoad')
     hi CursorIm guifg=NONE guibg=Skyblue gui=NONE
     set iminsert=0 imsearch=0
   endif
-  if isGUI
+  if has('gui')
     set linespace=0
     " GUI
     set guifont=Source_Code_Pro_Medium:h11
@@ -82,24 +62,23 @@ if !exists('g:VimrcIsLoad')
   endif
 endif
 " }}}
-" {{{ VimPlug
-  " {{{ Install VimPlug
+" VimPlug {{{
+  " Install VimPlug {{{
+  let s:vimplug_path=expand(s:vimroot . '/autoload/plug.vim')
   let hazVimPlugInstalled=1
-  if isWindows
+  if has('win32')
     set shellxquote=
-    let vimplug_path=expand($VIMRUNTIME . '/autoload/plug.vim')
-    let g:install_vimplug="!powershell (New-Object" .
+    let s:install_vimplug="!powershell (New-Object" .
           \ " Net.WebClient).DownloadFile('https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim','"
-          \ . vimplug_path . "')"
+          \ . s:vimplug_path . "')"
   else
-    let vimplug_path=expand(yeo_vimroot . '/autoload/plug.vim')
-    let g:install_vimplug="!curl -fLo " . vimplug_path . " --create-dirs" .
+    let s:install_vimplug="!curl -fLo " . s:vimplug_path . " --create-dirs" .
           \ " https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim"
   endif
-  if !filereadable(vimplug_path)
+  if !filereadable(s:vimplug_path)
     echo "Installing vim-plug"
     echo ""
-    silent execute g:install_vimplug
+    silent execute s:install_vimplug
     let hazVimPlugInstalled=0
   endif
   " }}}
@@ -116,8 +95,8 @@ endif
        " | `for`                   | 按需加载：文件类型                   |
        " | `frozen`                | 除非显式指定，否则不更新             |
   "
-  " {{{ All Plug
-  call plug#begin(yeo_vimroot . '/plugged')
+  " All Plug {{{
+  call plug#begin(s:vimroot . '/plugged')
   " 扩展VIM % g%匹配功能 {{{
   " 映射     描述
   " %        正向匹配
@@ -126,6 +105,8 @@ endif
   " ]%       定位块尾
     Plug 'tmhedberg/matchit', { 'for': ['html', 'xml'] }
   " }}}
+  " Plug 'xolox/vim-notes'
+  " Plug 'xolox/vim-misc'
   " Display {{{
   " 优化显示，包括配色、AirLine、标记
     Plug 'octol/vim-cpp-enhanced-highlight'
@@ -145,6 +126,7 @@ endif
     "Git 显示修改 {{{
       Plug 'airblade/vim-gitgutter'
       let g:airline_section_b = '%{get(g:,"coc_git_status", "")}%{get(b:, "coc_git_status", "")}%{get(b:,"coc_git_blame","")}'
+      let g:airline_section_z = '%#__accent_bold#%4l%#__restore__#%#__accent_bold#/%L%#__restore__# :%3v'
       nnoremap <silent> <leader>cc  :<C-u>CocCommand<CR>
       Plug 'tpope/vim-fugitive'
       " [] c 跳转
@@ -153,6 +135,7 @@ endif
     " }}}
     " Mark显示
     Plug 'kshenoy/vim-signature'
+    Plug 'lilydjwg/colorizer', { 'for': [ 'css', 'html', 'less', 'sass', 'scss', 'xml', 'xsd', 'xsl', 'xslt', 'mustache','json'  ]  }
   " }}}
   " Window {{{
   " 添加新窗口
@@ -173,6 +156,15 @@ endif
   " }}}
   " Misc {{{
   " 实用工具
+    " Leader Guide {{{
+      Plug 'hecal3/vim-leader-guide'
+      let g:lmap={}
+      let g:lmap.f = { 'name' : 'Open File' }
+    " }}}
+    " 实用功能 {{{
+    Plug 'tpope/vim-eunuch'
+    " Delete/Unlink/Move/Rename/Chmod/Mkdir/Cfind/Clocate/Lfind/Llocate/Wall/SudoWrite/SudoEdit/
+    " }}}
     " cs 替换, ds删除, ys添加, yss 全行
     Plug 'tpope/vim-surround'
     " Multiple cursors
@@ -182,7 +174,8 @@ endif
     " let g:multi_cursor_skip_key='<C-x>'
     " let g:multi_cursor_quit_key='<Esc>'
     " 自动配对
-    Plug 'vim-scripts/auto-pairs-gentle'
+    " Plug 'vim-scripts/auto-pairs-gentle'
+    Plug 'jiangmiao/auto-pairs'
     " Win Resize {{{
     " 使用C-e hjkl设置窗口大小
       Plug 'simeji/winresizer'
@@ -190,10 +183,14 @@ endif
     " }}}
     " gcc注释
     Plug 'tpope/vim-commentary'
+    " gS,gJ split/join
+    Plug 'AndrewRadev/splitjoin.vim'
+    " Mundo
+    Plug 'simnalamburt/vim-mundo'
     " 支持更多的ci,ca,cd等操作(包括‘“'",;:+=-等等)
     Plug 'wellle/targets.vim'
     " C-u C-d smooth-scroll
-    Plug 'yuttie/comfortable-motion.vim'
+    " Plug 'yuttie/comfortable-motion.vim'
     " AsyncRun {{{
       Plug 'skywind3000/asyncrun.vim'
       let g:asyncrun_open=8
@@ -201,18 +198,25 @@ endif
     " }}}
     " Repeat -- 支持普通模式使用"."来重复执行一些插件的命令
     Plug 'tpope/vim-repeat'
-    " <leader>f and SudoEdit{{{
+    " Plug 'Yggdroot/indentLine'
+    " <leader>f {{{
+      Plug 'easymotion/vim-easymotion'
+      let g:EasyMotion_do_mapping = 0
+      nnoremap <leader>w <Plug>(easymotion-w)
+      nnoremap <leader>j <Plug>(easymotion-j)
+      nnoremap <leader>k <Plug>(easymotion-k)
       " 快速跳转查找函数
-      if isWindows
+      if has('win32')
         Plug 'Yggdroot/LeaderF', { 'do': '.\install.bat' }
       else
         Plug 'Yggdroot/LeaderF', { 'do': './install.sh' }
-        Plug 'chrisbra/SudoEdit.vim'
       endif
+      noremap <C-F> :<C-U><C-R>=printf("Leaderf! rg -e %s ", expand("<cword>"))<CR><CR>
       nnoremap <silent> <leader>m :LeaderfMru<cr>
       nnoremap <silent> <leader>l :LeaderfLine<cr>
       nnoremap <silent> <leader>t :LeaderfFunction<cr>
       nnoremap <silent> <leader>b :LeaderfBuffer<cr>
+      let g:Lf_WorkingDirectoryMode = 'cF'
       let g:Lf_MruMaxFiles = 233
       let g:Lf_WindowHeight=0.3
       let g:Lf_WildIgnore = {
@@ -234,10 +238,9 @@ endif
       let g:incsearch#auto_nohlsearch = 1
     " }}}
     " 全局文内搜索 {{{
-      if s:hasAg
+      if executable('ag')
         Plug 'rking/ag.vim'
         let g:ag_prg="ag --vimgrep --smart-case -W 128"
-        nnoremap <C-f> :exe 'Ag!' expand('<cword>')<cr>
         " :Ag [options] pattern [directory]
         " :Ag FooBar foo/**/*.py 等同于 :Ag -G foo/.*/[^/]*\.py$ FooBar
       endif
@@ -265,13 +268,18 @@ endif
       imap   <C-y><C-y>   <plug>(emmet-expand-abbr)
     " }}}
     Plug 'neoclide/coc.nvim', {'tag': '*', 'do': './install.sh'}
-    let g:coc_global_extensions=["coc-json","coc-css","coc-html","coc-gocode","coc-emoji","coc-syntax", "coc-ultisnips","coc-emmet","coc-yank","coc-word","coc-highlight"]
+    let g:coc_global_extensions=["coc-json","coc-css","coc-html","coc-gocode","coc-emoji","coc-syntax", "coc-ultisnips","coc-lists","coc-emmet","coc-yank","coc-word"]
     nnoremap <silent> <space>y  :<C-u>CocList -A --normal yank<cr>
     " Remap for rename current word
     nmap <leader>rn <Plug>(coc-rename)
-    " Smaller updatetime for CursorHold & CursorHoldI
-    set updatetime=300
 
+    function! CopyMatches(reg)
+      let hits = []
+      %s//\=len(add(hits, submatch(0))) ? submatch(0) : ''/gne
+      let reg = empty(a:reg) ? '+' : a:reg
+      execute 'let @'.reg.' = join(hits, "\n") . "\n"'
+    endfunction
+    command! -register CopyMatches call CopyMatches(<q-reg>)
     function! s:check_back_space() abort
       let col = col('.') - 1
       return !col || getline('.')[col - 1]  =~# '\s'
@@ -285,8 +293,12 @@ endif
         call CocAction('doHover')
       endif
     endfunction
+    " Smaller updatetime for CursorHold & CursorHoldI
+    set updatetime=300
     " Highlight symbol under cursor on CursorHold
-    autocmd CursorHold * silent call CocActionAsync('highlight')"
+    " autocmd CursorHold * silent call CocActionAsync('highlight')
+    " autocmd CursorMoved * silent call CocActionAsync('highlight')
+    au CursorHoldI * sil call CocActionAsync('showSignatureHelp')
     " Install on archlinux
     " Adding "--system-libclang" to ./install.py
     " Plug 'Valloric/YouCompleteMe'
@@ -312,19 +324,52 @@ endif
     " Python and other languages code checker
     Plug 'tbastos/vim-lua'
     Plug 'udalov/kotlin-vim'
-    Plug 'w0rp/ale'
+    "ale {{{
+      Plug 'w0rp/ale'
+      let g:ale_c_clang_options = '-std=c17 -Wall -Wno-deprecated'
+      let g:ale_c_parse_makefile = 1
+      let g:ale_c_parse_compile_commands = 1
+      let g:ale_sign_column_always = 1
+      " let g:ale_fix_on_save = 1
+      let g:ale_fixers = {
+      \  'python': ['autopep8'],
+      \  'cpp': ['clang-format'],
+      \  'c': ['clang-format'],
+      \  'go' : ['gofmt', 'goimports'],
+      \  'javascript': ['standard'],
+      \  'html': ['prettier'],
+      \  'css': ['stylelint'],
+      \ }
+      " :call extend(g:ale_linters, {
+      "     \"go": ['golint', 'go vet'], })
+      let g:ale_linters = {
+      \  'python': ['flake8'],
+      \  'cpp': ['clang'],
+      \  'c': ['clang'],
+      \  'javascript': ['prettier'],
+      \  'html': ['prettier'],
+      \ }
+      let g:ale_lint_on_text_changed = 'normal'
+      let g:ale_lint_on_insert_leave = 1
+      let g:ale_sign_error = 'xx'
+      let g:ale_sign_warning = '!!'
+      let g:airline#extensions#ale#enabled = 1
+    " }}}
     " Python mode (indentation, doc, refactor, lints, code checking, motion and
     " operators, highlighting, run and ipdb breakpoints)
     " Plug 'python-mode/python-mode'
     " VimWiki {{{
-      Plug 'vimwiki/vimwiki'
-      map <Leader>ww <Plug>VimwikiIndex
-      let g:vimwiki_list = [{'path':'~/tik/','syntax':'markdown'}]
+      " Plug 'vimwiki/vimwiki'
+      " map <Leader>ww <Plug>VimwikiIndex
+      " let g:vimwiki_list = [{'path':'~/tik/','syntax':'markdown'}]
     " }}}
     " Vim-Jekyll {{{
       Plug 'zYeoman/vim-jekyll'
       let g:jekyll_post_extension = '.md'
       let g:jekyll_post_filetype = 'markdown'
+    " }}}
+    " Vim-Orgmode {{{
+      Plug 'jceb/vim-orgmode'
     " }}}
     " Vim-markdown {{{
       Plug 'plasticboy/vim-markdown'
@@ -412,22 +457,21 @@ endif
   command! Kwbd call s:Kwbd(1)
   nnoremap <silent> <Plug>Kwbd :<C-u>Kwbd<CR>
   " }}}
-  " Strip Whitespace {{{
-    " --- Strip trailing whitespace ---
-    function! StripWhitespace ()
-      let save_cursor = getpos(".")
-      let old_query = getreg('/')
-      :%s/\s\+$//e
-      call setpos('.', save_cursor)
-      call setreg('/', old_query)
-    endfunction
-  " }}}
+  function! StripWhitespace ()
+    let save_cursor = getpos(".")
+    let old_query = getreg('/')
+    :%s/\s\+$//e
+    call setpos('.', save_cursor)
+    call setreg('/', old_query)
+  endfunction
+  command! StripWhitespace call StripWhitespace()
   function! CleanBufs()
     for bufNr in filter(range(1, bufnr('$')),
       \ 'buflisted(v:val) && !bufloaded(v:val)')
       execute bufNr . 'bdelete'
     endfor
   endfunction
+  command! CleanBufs call CleanBufs()
   function! s:ToggleQf()
     for buffer in tabpagebuflist()
       if bufname(buffer) == ''
@@ -464,9 +508,13 @@ endif
   nmap <C-t> :call Mydict()<cr>
 " }}}
 " General {{{
+  syntax on
+  if exists('$TMUX')
+    set termguicolors
+  endif
+  set display=lastline
   set mouse=
   set nocompatible
-  set termguicolors
   set history=1024
   set cmdheight=2
   set noautochdir
@@ -494,17 +542,14 @@ endif
 " }}}
 " Global undo\swap\nobackup {{{
   " global undo
-  autocmd SwapExists * let v:swapchoice = "o"
-  let yeo_undodir = expand(yeo_vimroot . '/undodir')
-  if !isdirectory(yeo_undodir)
-    call mkdir(yeo_undodir, 'p')
+  let s:undodir = expand(s:vimroot . '/undodir')
+  if !isdirectory(s:undodir)
+    call mkdir(s:undodir, 'p')
   endif
   set nobackup
   set nowritebackup
-  " let &backupdir = yeo_undodir
-  " set backupext=-vimbackup
-  " set backupskip=
-  let &undodir = yeo_undodir
+  set noswapfile
+  let &undodir = s:undodir
   set undofile
 " }}}
 " GUI {{{
@@ -517,11 +562,12 @@ endif
   " line number {{{
     set number
     set relativenumber
-    autocmd FocusLost * :set norelativenumber number
-    autocmd FocusGained * :set relativenumber
-    " 插入模式下用绝对行号, 普通模式下用相对
-    autocmd InsertEnter * :set norelativenumber number
-    autocmd InsertLeave * :set relativenumber
+    " 动态修改
+    augroup number
+      autocmd!
+      autocmd FocusLost,BufLeave,InsertEnter * :set norelativenumber number
+      autocmd FocusGained,BufEnter,InsertLeave * :set relativenumber
+    augroup END
   " }}}
   " 使用:browse命令时打开的文件夹
   set browsedir=buffer
@@ -537,6 +583,9 @@ endif
   set scrolloff=5
   " color
   set background=dark
+  if has('unnamedplus')
+    set clipboard=unnamed,unnamedplus
+  endif
 " }}}
 "netrw {{{
   let g:netrw_liststyle = 3
@@ -560,17 +609,22 @@ endif
     set matchpairs=(:),{:},[:],《:》,〈:〉,［:］,（:）,「:」,『:』,‘:’,“:”
   catch /^Vim\%((\a\+)\)\=:E474/
   endtry
-  syntax on
 " }}}
-" {{{ key map
+" key map {{{
+  nmap <C-w><C-z> :tabedit %<cr>
   nmap <silent> <leader>ee :e $MYVIMRC<cr>
-  nmap <silent> <leader>cd :cd %:h<cr>
+  nmap <silent> <leader>cd :cd %:h<cr>:pwd<cr>
   " nmap <expr> <CR> (&buftype is# "quickfix" ? "<CR>" : ":a<CR><CR>.<CR>")
   " 使用leader q来打开关闭quickfix
   nnoremap <silent> <leader>q :call <SID>ToggleQf()<cr>
   nnoremap <silent> <leader>- o--------------------------------------------------------
   nnoremap / :set hlsearch<cr>/
   nnoremap <silent> <leader>p :setlocal paste! paste?<cr>
+  nnoremap DD "_dd
+  nnoremap YY "+yy
+  noremap <leader>z :bp<CR>
+  noremap <leader>x :bn<CR>
+  noremap <leader>c :bd<CR>
   " c-v c-c 粘贴复制
   imap <C-v> <esc>"+pa
   vmap <C-c> "+y
@@ -603,7 +657,7 @@ endif
   nmap <C-h> <C-w>h
   nmap <C-l> <c-w>l
   " }}}
-  " Visual Mode Map {{{
+  " Visual Mode Map {{{}}
   vnoremap < <gv
   vnoremap > >gv
   vmap <tab> >gv
@@ -611,7 +665,7 @@ endif
   vnoremap  *  y/<C-R>=escape(@", '\\/.*$^~[]')<CR><CR>
   vnoremap  #  y?<C-R>=escape(@", '\\/.*$^~[]')<CR><CR>
   " }}}
-  " Command Mode Map {{{"
+  " Command Mode Map {{{
   cnoremap <C-d> <BS>
   cnoremap <C-a> <home>
   cnoremap <C-e> <end>
@@ -620,34 +674,6 @@ endif
   cnoreabbrev <expr> w getcmdtype() == ":" && getcmdline() =~ '^w$' ? 'up' : 'w'
   cnoreabbrev <expr> x getcmdtype() == ":" && getcmdline() == 'x' ? 'Kwbd' : 'x'
   " }}}
-" }}}
-" Complete Settings {{{
-  set complete+=k
-  set completeopt=menu,menuone
-" }}}
-"ale {{{
-  let g:ale_c_parse_makefile = 1
-  let g:ale_sign_column_always = 1
-  let g:ale_fix_on_save = 1
-  let g:ale_fixers = {
-  \  'python': ['autopep8'],
-  \  'cpp': ['clang-format'],
-  \  'go' : ['gofmt', 'goimports'],
-  \  'javascript': ['standard'],
-  \  'html': ['prettier'],
-  \  'css': ['stylelint'],
-  \ }
-  let g:ale_linters = {
-  \  'python': ['flake8 --max-line-length=81'],
-  \  'cpp': ['clang'],
-  \  'javascript': ['prettier'],
-  \  'html': ['prettier'],
-  \ }
-  let g:ale_lint_on_text_changed = 'normal'
-  let g:ale_lint_on_insert_leave = 1
-  let g:ale_sign_error = 'xx'
-  let g:ale_sign_warning = '!!'
-  let g:airline#extensions#ale#enabled = 1
 " }}}
 " source {{{
   " source $VIMRUNTIME/delmenu.vim
@@ -658,8 +684,9 @@ endif
 " }}}
 " Endup {{{
 colorscheme gruvbox
-if isWindows
-  if isGUI
+" highlight CocHighlightText  term=bold cterm=reverse ctermfg=167 ctermbg=235 gui=reverse guifg=#fb4934 guibg=#282828
+if has('win32')
+  if has('gui')
     let g:MyVimLib = 'gvimfullscreen.dll'
     function! FullscreenToggle()
       call libcallnr(g:MyVimLib, "ToggleFullScreen", 1)
@@ -684,4 +711,18 @@ else
 endif
 " }}}
 
-" vim:expandtab shiftwidth=2 tabstop=8 textwidth=72
+" InsertMapForEnter: <CR> {{{
+function! InsertMapForEnter()
+    let line = trim(getline('.'))
+    if pumvisible()
+        return "\<C-y>"
+    elseif index([')', ']', '}'], strcharpart(line, getpos('.')[2]-1, 1)) >= 0
+        return "\<CR>\<Esc>O"
+    elseif strcharpart(line, getpos('.')[2]-1,2) == '</'
+        return "\<CR>\<Esc>O"
+    else
+        return "\<CR>"
+    endif
+endfunction
+" }}}
+" vim: set shiftwidth=2 tabstop=2 softtabstop=2 expandtab textwidth=78 foldlevel=0 foldmethod=marker foldopen=all foldclose=all spell:
