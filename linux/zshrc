@@ -11,7 +11,7 @@
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git-extras pip extract cp colored-man-pages sudo)
+plugins=(git-extras pip extract cp colored-man-pages sudo z)
 
 # colorize: syntax cat
 # cp: cp with progress bar
@@ -83,7 +83,7 @@ PERL_MB_OPT="--install_base \"/home/mickir/perl5\""; export PERL_MB_OPT;
 PERL_MM_OPT="INSTALL_BASE=/home/mickir/perl5"; export PERL_MM_OPT;
 
 export PYTHONSTARTUP=~/.pythonrc
-export CDPATH=~
+# export CDPATH=~
 export HISTIGNORE="pwd:ls:ls -alh"
 
 ### Added by Zplugin's installer
@@ -102,7 +102,7 @@ zplugin load 'hlissner/zsh-autopair'
 zplugin load 'zsh-users/zsh-autosuggestions'
 zplugin load 'MichaelAquilina/zsh-you-should-use'
 zplugin load 'zsh-users/zsh-completions'
-zplugin load 'skywind3000/z.lua'
+# zplugin load 'skywind3000/z.lua'
 zplugin ice atclone"dircolors -b LS_COLORS > c.zsh" atpull'%atclone' pick"c.zsh"
 zplugin light trapd00r/LS_COLORS
 
