@@ -125,7 +125,7 @@ endif
     " }}}
     "Git 显示修改 {{{
       Plug 'airblade/vim-gitgutter'
-      let g:airline_section_b = '%{get(g:,"coc_git_status", "")}%{get(b:, "coc_git_status", "")}%{get(b:,"coc_git_blame","")}'
+      let g:airline_section_b = '%{get(g:,"coc_git_status", "")}%{get(b:, "coc_git_status", "")}%{get(b:,"coc_git_blame","")}%{ObsessionStatus()}'
       let g:airline_section_z = '%#__accent_bold#%4l%#__restore__#%#__accent_bold#/%L%#__restore__# :%3v'
       nnoremap <silent> <leader>cc  :<C-u>CocCommand<CR>
       Plug 'tpope/vim-fugitive'
@@ -153,6 +153,8 @@ endif
     " F10 RUN
     Plug 'thinca/vim-quickrun'
     nnoremap <silent> <F10> :QuickRun<CR>
+    " Save session
+    Plug 'tpope/vim-obsession'
   " }}}
   " Misc {{{
   " 实用工具
