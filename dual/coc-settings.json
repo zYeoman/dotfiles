@@ -4,7 +4,7 @@
   "coc.preferences.formatOnType": true,
   "json.enable": false,
   "git.enableGutters": false,
-  "diagnostic.displayByAle": true,
+  "diagnostic.enable": false,
   "languageserver": {
     "ccls": {
       "command": "ccls",
