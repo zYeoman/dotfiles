@@ -135,6 +135,8 @@ function gitrefresh() {
 
 notica() { curl --data "d:$*" "https://notica.us/?7wA-md3D" ;  }
 
+run() {g++ "$*" -DDEBUG -W -Wall -Wextra -Wno-unused -g -Wformat=2 -Werror -o tmp && echo "Compile Success!" && ./tmp && rm tmp;}
+
 # alsi # Print linux info
 # export FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git/*"'
 export FZF_DEFAULT_COMMAND='fd --exclude={.git,.idea,.vscode,.sass-cache,node_modules,build} --type f'
