@@ -141,3 +141,14 @@ run() {g++ "$*" -DDEBUG -W -Wall -Wextra -Wno-unused -g -Wformat=2 -Werror -o tm
 # export FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git/*"'
 export FZF_DEFAULT_COMMAND='fd --exclude={.git,.idea,.vscode,.sass-cache,node_modules,build} --type f'
 export FZF_DEFAULT_OPTS='--bind tab:down --cycle --height 40% --reverse --preview "[[ $(file --mime {}) =~ binary ]] && echo {} is a binary file || (highlight -O ansi {} || cat {}) 2> /dev/null | head -100"'
+# If current selection is a text file shows its content,
+# if it's a directory shows its content, the rest is ignored
+export FZF_CTRL_T_OPTS="--preview-window wrap --preview '
+if [[ -f {} ]]; then
+    file --mime {} | grep -q \"text\/.*;\" && bat --color \"always\" {} || (tput setaf 1; file --mime {})
+elif [[ -d {} ]]; then
+    exa -l --color always {}
+else;
+    tput setaf 1; echo YOU ARE NOT SUPPOSED TO SEE THIS!
+fi'"
+setopt +o nomatch
