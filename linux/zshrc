@@ -54,7 +54,7 @@ alias erlang=erl
 alias scheme=csi
 alias def="/usr/bin/sdcv -u 朗道英汉字典 "
 alias pls='sudo $(fc -ln -1)'
-alias ag='ag $* -W 100'
+alias ag='ag -W 100'
 
 # fzf
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
