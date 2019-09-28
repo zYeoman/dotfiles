@@ -112,7 +112,7 @@ alias tid="vim +'normal Go' ~/tik/tid-$(date +%F).wiki"
 alias til="vim +'normal Go' +'r!date +\%F' ~/tik/til.wiki"
 alias tir="vim +'normal Go' +'r!date +\%F' ~/tik/tir.wiki"
 
-alias duu="sudo du -hsx --one-file-system * | sort -rh | head -6"
+alias duu="sudo du -hsx .[!.]* * | sort -rh | head -6"
 alias cp="rsync -ae ssh"
 # alias cat="bat"
 # alias du="ncdu"
