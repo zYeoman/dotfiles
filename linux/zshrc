@@ -112,10 +112,30 @@ alias tid="vim +'normal Go' ~/tik/tid-$(date +%F).wiki"
 alias til="vim +'normal Go' +'r!date +\%F' ~/tik/til.wiki"
 alias tir="vim +'normal Go' +'r!date +\%F' ~/tik/tir.wiki"
 
-alias duu="sudo du -hsx .[!.]* * | sort -rh | head -6"
+if type "ncdu" > /dev/null; then
+  alias duu="ncdu --color dark -rr -x --exclude .git --exclude node_modules"
+else
+  alias duu="sudo du -hsx .[!.]* * | sort -rh | head -6"
+fi
+if type "bat" > /dev/null; then
+  alias catt="bat"
+else
+  alias catt="cat -A"
+fi
+if type "prettyping" > /dev/null; then
+  alias pingg="prettyping"
+else
+  alias pingg="ping"
+fi
+if type "diff-so-fancy" > /dev/null; then
+  alias difff="diff-so-fancy"
+else
+  alias difff="diff"
+fi
+if ! type "fd" > /dev/null; then
+  alias fd="find"
+fi
 alias cp="rsync -ae ssh"
-# alias cat="bat"
-# alias du="ncdu"
 
 alias mkdirr='function _mkdirr(){ mkdir $1 && cd $_;};_mkdirr'
 
