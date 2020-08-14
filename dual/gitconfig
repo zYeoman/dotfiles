@@ -5,13 +5,14 @@
 [user]
   name = Yongwen Zhuang
   email = zyeoman@163.com
-	signingkey = 4337D8FFADD44B0FE7F6DF65DE863DE9442AFD2C
+  signingkey = 4337D8FFADD44B0FE7F6DF65DE863DE9442AFD2C
 [core]
   quotepath = false
   editor = vim
   whitespace = =
   excludesfile = ~/.gitignore
   pager = diff-so-fancy | less --tabs=4 -RFX
+  commitGraph = true
 [url "https://github"]
   insteadOf = git://github
 [http]
@@ -64,4 +65,6 @@
   new = green bold
   whitespace = red reverse
 [rebase]
-	autostash = true
+  autostash = true
+[gc]
+  writeCommitGraph = true
