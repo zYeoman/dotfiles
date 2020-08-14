@@ -353,6 +353,7 @@ endif
       \  'javascript': ['standard'],
       \  'html': ['prettier'],
       \  'css': ['stylelint'],
+      \ 'rust': ['rustfmt']
       \ }
       " :call extend(g:ale_linters, {
       "     \"go": ['golint', 'go vet'], })
@@ -363,6 +364,7 @@ endif
       \  'lua': ['luac'],
       \  'javascript': ['prettier'],
       \  'html': ['prettier'],
+      \ 'rust':['rls']
       \ }
       let g:ale_lint_on_text_changed = 'normal'
       let g:ale_lint_on_insert_leave = 1
@@ -742,5 +744,6 @@ function! InsertMapForEnter()
         return "\<CR>"
     endif
 endfunction
+  autocmd FileType cpp setlocal commentstring=//\ %s shiftwidth=2
 " }}}
 " vim: set shiftwidth=2 tabstop=2 softtabstop=2 expandtab textwidth=78 foldlevel=0 foldmethod=marker foldopen=all foldclose=all spell:
