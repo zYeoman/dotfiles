@@ -1,0 +1,672 @@
+scriptencoding utf-8
+" Title: Vimrc for windows and linux
+" Maintainer: Yeoman Zhuang <zyeoman@163.com>
+" Last Modified: 2019-06-16 12:27
+
+" Startup {{{
+  let mapleader=" "
+  let maplocalleader=" "
+  if has('win32')
+    let s:vimroot=expand('$HOME/vimfiles')
+  else
+    let s:vimroot=expand('$HOME/.vim')
+  endif
+  if !isdirectory(s:vimroot)
+    call mkdir(s:vimroot, 'p')
+  endif
+  augroup qf
+    autocmd!
+    autocmd FileType qf set nobuflisted
+  augroup END
+  augroup vimrc-sync-fromstart
+    autocmd!
+    autocmd BufEnter * :syntax sync maxlines=200
+  augroup END
+  " Auto Reload Vimrc
+  autocmd!
+  autocmd BufWritePost $MYVIMRC source $MYVIMRC | AirlineRefresh
+  autocmd BufWritePost vimrc source $MYVIMRC | AirlineRefresh
+  autocmd FileType cpp setlocal commentstring=//\ %s shiftwidth=2
+  autocmd FileType html setlocal shiftwidth=2 tabstop=2
+  autocmd FileType python setlocal expandtab shiftwidth=4 softtabstop=4
+  " strip space
+  " autocmd BufWritePre * call StripWhitespace()
+  " autocmd BufWritePre $MYVIMRC call <SID>UpdateLastMod('" ')
+  " autocmd BufWritePre *.js,*.css call <SID>UpdateLastMod(' * ')
+  " autocmd BufWritePre *.rb,*.py,*.sh call <SID>UpdateLastMod('# ')
+  " autocmd BufWritePre *.md,*.markdown call <SID>UpdateLastMod('')
+  " autocmd BufWritePre *.c,*.cpp,*.h,*.hpp,*.cc call <SID>UpdateLastMod('')
+" }}}
+" Lang & Encoding {{{
+if !exists('g:VimrcIsLoad')
+  filetype on
+  filetype plugin on
+  filetype plugin indent on
+  set foldlevel=99
+  set foldmethod=syntax
+  " local language
+  set encoding=utf-8
+  set fileencoding=utf-8
+  set fileencodings=utf-8,ucs-bom,gb18030,gbk,gb2312,cp936
+  set termencoding=utf-8
+  set helplang=en
+  language messages en_US.utf-8
+  " 输入法
+  if has('multi_byte_ime')
+    hi Cursor guifg=bg guibg=Orange gui=NONE
+    hi CursorIm guifg=NONE guibg=Skyblue gui=NONE
+    set iminsert=0 imsearch=0
+  endif
+  if has('gui')
+    set linespace=0
+    " GUI
+    set guifont=Source_Code_Pro_Medium:h11
+    set guioptions=
+    autocmd GUIEnter * simalt ~x
+  endif
+endif
+" }}}
+" VimPlug {{{
+  " Install VimPlug {{{
+  let s:vimplug_path=expand(s:vimroot . '/autoload/plug.vim')
+  let hazVimPlugInstalled=1
+  if has('win32')
+    set shellxquote=
+    let s:install_vimplug="!powershell (New-Object" .
+          \ " Net.WebClient).DownloadFile('https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim','"
+          \ . s:vimplug_path . "')"
+  else
+    let s:install_vimplug="!curl -fLo " . s:vimplug_path . " --create-dirs" .
+          \ " https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim"
+  endif
+  if !filereadable(s:vimplug_path)
+    echo "Installing vim-plug"
+    echo ""
+    silent execute s:install_vimplug
+    let hazVimPlugInstalled=0
+  endif
+  " }}}
+
+  "     Plug参数说明
+       " | Option                  | Description                          |
+       " | ----------------------- | ------------------------------------ |
+       " | `branch`/`tag`/`commit` | 存储库使用的 branch/tag/commit       |
+       " | `rtp`                   | 子目录包含的Vim插件                  |
+       " | `dir`                   | 自定义该插件目录                     |
+       " | `as`                    | 插件重命令                           |
+       " | `do`                    | 更新后的挂钩（字符串或函数引用）     |
+       " | `on`                    | 按需加载：命令或 `<Plug>`-mappings   |
+       " | `for`                   | 按需加载：文件类型                   |
+       " | `frozen`                | 除非显式指定，否则不更新             |
+  "
+  " All Plug {{{
+  call plug#begin(s:vimroot . '/plugged')
+  " 扩展VIM % g%匹配功能 {{{
+  " 映射     描述
+  " %        正向匹配
+  " g%       反向匹配
+  " [%       定位块首
+  " ]%       定位块尾
+    Plug 'tmhedberg/matchit', { 'for': ['html', 'xml'] }
+  " }}}
+  " Display {{{
+  " 优化显示，包括配色、AirLine、标记
+    Plug 'octol/vim-cpp-enhanced-highlight'
+    " Colorscheme
+    Plug 'morhetz/gruvbox'
+    Plug 'flazz/vim-colorschemes'
+    " Airline - 更轻的vim-powerline替代品 {{{
+      Plug 'vim-airline/vim-airline'
+      " Plug 'vim-airline/vim-airline-themes'
+      " let g:airline_theme = 'base16color'
+      let g:airline_powerline_fonts = 1
+      let g:airline#extensions#tabline#enabled = 1
+      let g:airline#extensions#tabline#formatter = 'unique_tail'
+      let g:airline#extensions#tabline#buffer_idx_mode = 1
+      let g:airline#extensions#tagbar#enabled = 1
+    " }}}
+    "Git 显示修改 {{{
+      Plug 'airblade/vim-gitgutter'
+      Plug 'tpope/vim-fugitive'
+      " [] c 跳转
+      let g:gitgutter_diff_args = '-w'
+      command! GitFold GitGutterFold
+    " }}}
+    " Mark显示
+    Plug 'kshenoy/vim-signature'
+    Plug 'lilydjwg/colorizer', { 'for': [ 'css', 'html', 'less', 'sass', 'scss', 'xml', 'xsd', 'xsl', 'xslt', 'mustache','json'  ]  }
+  " }}}
+  " Window {{{
+  " 添加新窗口
+    " F9 tagbar
+    nnoremap <silent> <F8> :TagbarToggle<CR>
+    Plug 'majutsushi/tagbar'
+    " F6 NerdTree
+    Plug 'scrooloose/nerdtree'
+    nnoremap <silent> <F6> :NERDTreeToggle<CR>
+    " F10 RUN
+    Plug 'thinca/vim-quickrun'
+    nnoremap <silent> <F10> :QuickRun<CR>
+  " }}}
+  " Misc {{{
+  " 实用工具
+    " 实用功能 {{{
+    Plug 'tpope/vim-eunuch'
+    " Delete/Unlink/Move/Rename/Chmod/Mkdir/Cfind/Clocate/Lfind/Llocate/Wall/SudoWrite/SudoEdit/
+    " }}}
+    " cs 替换, ds删除, ys添加, yss 全行
+    Plug 'tpope/vim-surround'
+    " Multiple cursors
+    Plug 'terryma/vim-multiple-cursors'
+    " let g:multi_cursor_next_key='<C-n>'
+    " let g:multi_cursor_prev_key='<C-p>'
+    " let g:multi_cursor_skip_key='<C-x>'
+    " let g:multi_cursor_quit_key='<Esc>'
+    " 自动配对
+    " Plug 'vim-scripts/auto-pairs-gentle'
+    Plug 'jiangmiao/auto-pairs'
+    " Win Resize {{{
+    " 使用C-e hjkl设置窗口大小
+      Plug 'simeji/winresizer'
+      let g:winresizer_gui_enable = 1
+    " }}}
+    " gcc注释
+    Plug 'tpope/vim-commentary'
+    " gS,gJ split/join
+    Plug 'AndrewRadev/splitjoin.vim'
+    " Mundo
+    Plug 'simnalamburt/vim-mundo'
+    " 支持更多的ci,ca,cd等操作(包括‘“'",;:+=-等等)
+    Plug 'wellle/targets.vim'
+    " C-u C-d smooth-scroll
+    " AsyncRun {{{
+      Plug 'skywind3000/asyncrun.vim'
+      let g:asyncrun_open=8
+      nnoremap <C-r> :AsyncRun<Space>
+    " }}}
+    " Repeat -- 支持普通模式使用"."来重复执行一些插件的命令
+    Plug 'tpope/vim-repeat'
+    " Plug 'Yggdroot/indentLine'
+    " <leader>f {{{
+      Plug 'easymotion/vim-easymotion'
+      let g:EasyMotion_do_mapping = 0
+      nnoremap <leader>w <Plug>(easymotion-w)
+      nnoremap <leader>j <Plug>(easymotion-j)
+      nnoremap <leader>k <Plug>(easymotion-k)
+      " 快速跳转查找函数
+      if has('win32')
+        Plug 'Yggdroot/LeaderF', { 'do': '.\install.bat' }
+      else
+        Plug 'Yggdroot/LeaderF', { 'do': './install.sh' }
+      endif
+      noremap <C-F> :<C-U><C-R>=printf("Leaderf! rg -e %s ", expand("<cword>"))<CR><CR>
+      nnoremap <silent> <leader>m :LeaderfMru<cr>
+      nnoremap <silent> <leader>l :LeaderfLine<cr>
+      nnoremap <silent> <leader>t :LeaderfFunction<cr>
+      nnoremap <silent> <leader>b :LeaderfBuffer<cr>
+      let g:Lf_WorkingDirectoryMode = 'cF'
+      let g:Lf_MruMaxFiles = 233
+      let g:Lf_WindowHeight=0.3
+      let g:Lf_WildIgnore = {
+              \ 'dir': ['.svn','.git','.hg'],
+              \ 'file': ['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]','*.zip','*.tar.*']
+              \}
+    " }}}
+    " [] 工具 vim-unimpaired {{{
+      Plug 'tpope/vim-unimpaired'
+      " [] l: 错误跳转，支持ALE
+    " }}}
+    " 对齐 {{{
+      Plug 'vim-scripts/Align'
+      let g:loaded_AlignMapsPlugin=1
+    " }}}
+    " Improve search {{{
+      Plug 'haya14busa/is.vim'
+      " Vim incsearch
+      let g:incsearch#auto_nohlsearch = 1
+    " }}}
+    " 全局文内搜索 {{{
+      if executable('ag')
+        Plug 'rking/ag.vim'
+        let g:ag_prg="ag --vimgrep --smart-case -W 128"
+        " :Ag [options] pattern [directory]
+        " :Ag FooBar foo/**/*.py 等同于 :Ag -G foo/.*/[^/]*\.py$ FooBar
+      endif
+    " }}}
+  " }}}
+  " Init {{{
+  " 初始化内容
+    " 启动页面，包括最近使用的文件等
+    Plug 'mhinz/vim-startify'
+    " 回到退出时的位置
+    Plug 'farmergreg/vim-lastplace'
+    " 打开文件时自动创建没有的文件夹
+    Plug 'pbrisbin/vim-mkdir'
+  " }}}
+  Plug 'dhruvasagar/vim-table-mode'
+
+  " 自动填充 {{{
+    function! CopyMatches(reg)
+      let hits = []
+      %s//\=len(add(hits, submatch(0))) ? submatch(0) : ''/gne
+      let reg = empty(a:reg) ? '+' : a:reg
+      execute 'let @'.reg.' = join(hits, "\n") . "\n"'
+    endfunction
+    command! -register CopyMatches call CopyMatches(<q-reg>)
+    function! s:check_back_space() abort
+      let col = col('.') - 1
+      return !col || getline('.')[col - 1]  =~# '\s'
+    endfunction
+    " Use K to show documentation in preview window
+    nnoremap <silent> K :call <SID>show_documentation()<CR>"
+    function! s:show_documentation()
+      if (index(['vim','help'], &filetype) >= 0)
+        execute 'h '.expand('<cword>')
+      else
+        call CocAction('doHover')
+      endif
+    endfunction
+    " Smaller updatetime for CursorHold & CursorHoldI
+    set updatetime=300
+    " Highlight symbol under cursor on CursorHold
+    " autocmd CursorHold * silent call CocActionAsync('highlight')
+    " autocmd CursorMoved * silent call CocActionAsync('highlight')
+    au CursorHoldI * sil call CocActionAsync('showSignatureHelp')
+    " Install on archlinux
+    " Adding "--system-libclang" to ./install.py
+    " Plug 'Valloric/YouCompleteMe'
+    " Plug 'rdnetto/YCM-Generator', { 'branch': 'stable' }
+    Plug 'ervandew/supertab'
+    let g:SuperTabDefaultCompletionType = '<C-n>'
+    let g:SuperTabClosePreviewOnPopupClose = 1
+    " 代码片段
+    Plug 'SirVer/ultisnips'
+    Plug 'honza/vim-snippets'
+    " better key bindings for UltiSnipsExpandTrigger
+    let g:UltiSnipsExpandTrigger = "<tab>"
+  " }}}
+  " 中文Doc
+  Plug 'vimcn/vimcdoc'
+
+  "Languages {{{
+    " Plug 'sheerun/vim-polyglot', { 'for': ['shenmewanyier','python'] }
+    " Plug 'romainl/vim-qlist'
+    " Python and other languages code checker
+    "ale {{{
+      Plug 'w0rp/ale'
+      let g:ale_c_clang_options = '-std=c17 -Wall -Wno-deprecated'
+      let g:ale_c_parse_makefile = 1
+      let g:ale_c_parse_compile_commands = 1
+      let g:ale_sign_column_always = 1
+      " let g:ale_fix_on_save = 1
+      let g:ale_fixers = {
+      \  'python': ['autopep8'],
+      \  'cpp': ['clang-format'],
+      \  'c': ['clang-format'],
+      \  'go' : ['gofmt', 'goimports'],
+      \  'javascript': ['standard'],
+      \  'html': ['prettier'],
+      \  'css': ['stylelint'],
+      \ }
+      " :call extend(g:ale_linters, {
+      "     \"go": ['golint', 'go vet'], })
+      let g:ale_linters = {
+      \  'python': ['flake8'],
+      \  'cpp': ['clang'],
+      \  'c': ['clang'],
+      \  'javascript': ['prettier'],
+      \  'html': ['prettier'],
+      \ }
+      let g:ale_lint_on_text_changed = 'normal'
+      let g:ale_lint_on_insert_leave = 1
+      let g:ale_sign_error = 'xx'
+      let g:ale_sign_warning = '!!'
+      let g:airline#extensions#ale#enabled = 1
+    " }}}
+    " Python mode (indentation, doc, refactor, lints, code checking, motion and
+    " operators, highlighting, run and ipdb breakpoints)
+    " Plug 'python-mode/python-mode'
+  " }}}
+
+  call plug#end()
+  " }}}
+
+  if hazVimPlugInstalled == 0
+    echo "Installing Plugins, please ignore key map error messages"
+    echo ""
+    :PlugInstall
+  endif
+" }}}
+" Functions {{{
+  " Kwbd {{{
+  " here is a more exotic version of my original Kwbd script
+  " delete the buffer; keep windows; create a scratch buffer if no buffers left
+  function s:Kwbd(kwbdStage)
+    if(a:kwbdStage == 1)
+      if(!buflisted(winbufnr(0)))
+        bd!
+        return
+      endif
+      let s:kwbdBufNum = bufnr("%")
+      let s:kwbdWinNum = winnr()
+      windo call s:Kwbd(2)
+      execute s:kwbdWinNum . 'wincmd w'
+      let s:buflistedLeft = 0
+      let s:bufFinalJump = 0
+      let l:nBufs = bufnr("$")
+      let l:i = 1
+      while(l:i <= l:nBufs)
+        if(l:i != s:kwbdBufNum)
+          if(buflisted(l:i))
+            let s:buflistedLeft = s:buflistedLeft + 1
+          else
+            if(bufexists(l:i) && !strlen(bufname(l:i)) && !s:bufFinalJump)
+              let s:bufFinalJump = l:i
+            endif
+          endif
+        endif
+        let l:i = l:i + 1
+      endwhile
+      if(!s:buflistedLeft)
+        if(s:bufFinalJump)
+          windo if(buflisted(winbufnr(0))) | execute "b! " . s:bufFinalJump | endif
+        else
+          enew
+          let l:newBuf = bufnr("%")
+          windo if(buflisted(winbufnr(0))) | execute "b! " . l:newBuf | endif
+        endif
+        execute s:kwbdWinNum . 'wincmd w'
+      endif
+      if(buflisted(s:kwbdBufNum) || s:kwbdBufNum == bufnr("%"))
+        execute "bd! " . s:kwbdBufNum
+      endif
+      if(!s:buflistedLeft)
+        set buflisted
+        set bufhidden=delete
+        set buftype=
+        setlocal noswapfile
+      endif
+    else
+      if(bufnr("%") == s:kwbdBufNum)
+        let prevbufvar = bufnr("#")
+        if(prevbufvar > 0 && buflisted(prevbufvar) && prevbufvar != s:kwbdBufNum)
+          b #
+        else
+          bn
+        endif
+      endif
+    endif
+  endfunction
+
+  command! Kwbd call s:Kwbd(1)
+  nnoremap <silent> <Plug>Kwbd :<C-u>Kwbd<CR>
+  " }}}
+  function! StripWhitespace ()
+    let save_cursor = getpos(".")
+    let old_query = getreg('/')
+    :%s/\s\+$//e
+    call setpos('.', save_cursor)
+    call setreg('/', old_query)
+  endfunction
+  command! StripWhitespace call StripWhitespace()
+  function! CleanBufs()
+    for bufNr in filter(range(1, bufnr('$')),
+      \ 'buflisted(v:val) && !bufloaded(v:val)')
+      execute bufNr . 'bdelete'
+    endfor
+  endfunction
+  command! CleanBufs call CleanBufs()
+  function! s:ToggleQf()
+    for buffer in tabpagebuflist()
+      if bufname(buffer) == ''
+        " then it should be the quickfix window
+        cclose
+        return
+      endif
+    endfor
+    copen
+  endfunction
+  " 更新最后修改时间
+  function! <SID>UpdateLastMod(pre)
+    " preparation: save last search, and cursor position.
+    let _s=@/
+    let l = line(".")
+    let c = col(".")
+
+    let n = min([10, line('$')]) " 检查头部多少行
+    let timestamp = strftime('%Y-%m-%d %H:%M %z') " 时间格式
+    let timestamp = substitute(timestamp, '%', '\%', 'g')
+    let pat = substitute('\(Last Modified\|date\):\s*\zs.*\ze', '%', '\%', 'g')
+    keepjumps silent execute '1,'.n.'s%^.*'.a:pre.pat.'.*$%'.timestamp.'%e'
+
+    " clean up: restore previous search history, and cursor position
+    let @/=_s
+    call cursor(l, c)
+  endfunction
+  " sdcv translate
+  " http://renwolang521.iteye.com/blog/1317789
+  function! Mydict()
+    cexpr system('sdcv -u 朗道英汉字典 -n ' . expand("<cword>"))
+    copen
+  endfunction
+  nmap <C-t> :call Mydict()<cr>
+" }}}
+" General {{{
+  syntax on
+  if exists('$TMUX')
+    set termguicolors
+  endif
+  set display=lastline
+  set mouse=
+  set nocompatible
+  set history=1024
+  set cmdheight=2
+  set noautochdir
+  set ttyfast
+  set whichwrap=b,s,<,>,[,],h,l
+  " 补全列表显示 {{{
+    set wildmenu
+    set wildmode=list:longest,full
+  " }}}
+  " Ignore file config {{{
+    set wildignore+=*.o,*.obj,*~ "stuff to ignore when tab completing
+    set wildignore+=*/tmp/*,*.so,*.swp,*.zip,*DS_Store*,vendor/rails/**,vendor/cache/**,*.gem,log/**,tmp/**
+    set wildignore+=*.png,*.jpg,*.gif,*.webp,*.psd,*.exe,*.sketch
+    set wildignore+=*.so,*.swp,*.zip,*/.Trash/**,*.pdf,*.dmg,*/Library/**,*/.rbenv/**
+    set wildignore+=*/.nx/**,*.app,*.git,.git,.svn
+  " }}}
+  " TAB替换空格
+  set smarttab
+  " 简写消息
+  set shortmess=atOIc
+  " No BOM
+  set nobomb
+  " Backspace autoindent, end of line, start of insert
+  set backspace=indent,eol,start
+" }}}
+" Global undo\swap\nobackup {{{
+  " global undo
+  let s:undodir = expand(s:vimroot . '/undodir')
+  if !isdirectory(s:undodir)
+    call mkdir(s:undodir, 'p')
+  endif
+  set nobackup
+  set nowritebackup
+  set noswapfile
+  let &undodir = s:undodir
+  set undofile
+" }}}
+" GUI {{{
+  set lazyredraw
+  " 总是显示状态栏
+  set laststatus=2
+  " 显示行尾空格和TAB
+  set list
+  set listchars=tab:>-,trail:-
+  " line number {{{
+    set number
+    set relativenumber
+    " 动态修改
+    augroup number
+      autocmd!
+      autocmd FocusLost,BufLeave,InsertEnter * :set norelativenumber number
+      autocmd FocusGained,BufEnter,InsertLeave * :set relativenumber
+    augroup END
+  " }}}
+  " 使用:browse命令时打开的文件夹
+  set browsedir=buffer
+  set cursorline
+  set ruler
+  " search {{{
+    set ignorecase
+    set smartcase
+    set incsearch
+    set hlsearch
+  " }}}
+  " Scroll
+  set scrolloff=5
+  " color
+  set background=dark
+  if has('unnamedplus')
+    set clipboard=unnamed,unnamedplus
+  endif
+" }}}
+"netrw {{{
+  let g:netrw_liststyle = 3
+  let g:netrw_winsize = 16
+  let g:netrw_banner = 0
+  let g:netrw_browse_split = 2
+" }}}
+" Format {{{
+  set autoindent
+  set smartindent
+  set copyindent
+  set tabstop=2
+  set shiftwidth=2
+  set expandtab
+  set softtabstop=2
+  set formatoptions+=romnBj
+  set formatoptions-=t
+  set fileformat=unix
+  set fileformats=unix,dos,mac
+  try
+    set matchpairs=(:),{:},[:],《:》,〈:〉,［:］,（:）,「:」,『:』,‘:’,“:”
+  catch /^Vim\%((\a\+)\)\=:E474/
+  endtry
+" }}}
+" key map {{{
+  nmap <C-w><C-z> :tabedit %<cr>
+  nmap <silent> <leader>ee :e $MYVIMRC<cr>
+  nmap <silent> <leader>cd :cd %:h<cr>:pwd<cr>
+  " nmap <expr> <CR> (&buftype is# "quickfix" ? "<CR>" : ":a<CR><CR>.<CR>")
+  " 使用leader q来打开关闭quickfix
+  nnoremap <silent> <leader>q :call <SID>ToggleQf()<cr>
+  nnoremap <silent> <leader>- o--------------------------------------------------------
+  nnoremap / :set hlsearch<cr>/
+  nnoremap <silent> <leader>p :setlocal paste! paste?<cr>
+  nnoremap DD "_dd
+  nnoremap YY "+yy
+  noremap <leader>z :bp<CR>
+  noremap <leader>x :bn<CR>
+  noremap <leader>c :bd<CR>
+  " c-v c-c 粘贴复制
+  imap <C-v> <esc>"+pa
+  vmap <C-c> "+y
+  cmap <C-V> <C-R>+
+  imap <C-tab> :tabnext<cr>
+  nmap <C-tab> :tabnext<cr>
+  imap <C-S-tab> :tabprevious<cr>
+  nmap <C-S-tab> :tabprevious<cr>
+  " Insert Mode Map {{{
+  inoremap <C-a> <Home>
+  inoremap <C-e> <End>
+  inoremap <C-d> <BS>
+  inoremap <C-BS> <Esc>bdea
+  " }}}
+  " Nomal Mode Map {{{
+  noremap <Leader><Space> za
+  nnoremap U <C-r>
+  " 增强jkHL
+  nnoremap j gj
+  nnoremap k gk
+  nnoremap H ^
+  nnoremap L $
+  " Tab操作
+  nmap tn :tabnew
+  nmap tc :tabclose<cr>
+  nmap th :tabp<cr>
+  nmap tl :tabn<cr>
+  nmap <C-k> <C-w>k
+  nmap <C-j> <c-w>j
+  nmap <C-h> <C-w>h
+  nmap <C-l> <c-w>l
+  " }}}
+  " Visual Mode Map {{{}}
+  vnoremap < <gv
+  vnoremap > >gv
+  vmap <tab> >gv
+  vmap <s-tab> <gv
+  vnoremap  *  y/<C-R>=escape(@", '\\/.*$^~[]')<CR><CR>
+  vnoremap  #  y?<C-R>=escape(@", '\\/.*$^~[]')<CR><CR>
+  " }}}
+  " Command Mode Map {{{
+  cnoremap <C-d> <BS>
+  cnoremap <C-a> <home>
+  cnoremap <C-e> <end>
+  " 来自
+  " https://vi.stackexchange.com/questions/16173/how-to-remap-w-to-up
+  cnoreabbrev <expr> w getcmdtype() == ":" && getcmdline() =~ '^w$' ? 'up' : 'w'
+  cnoreabbrev <expr> x getcmdtype() == ":" && getcmdline() == 'x' ? 'Kwbd' : 'x'
+  " }}}
+" }}}
+" source {{{
+  " source $VIMRUNTIME/delmenu.vim
+  " source $VIMRUNTIME/menu.vim
+  " 上面两行解决菜单乱码问题
+  " source $VIMRUNTIME/vimrc_example.vim
+  " source $VIMRUNTIME/mswin.vim
+" }}}
+" Endup {{{
+colorscheme gruvbox
+" highlight CocHighlightText  term=bold cterm=reverse ctermfg=167 ctermbg=235 gui=reverse guifg=#fb4934 guibg=#282828
+if has('win32')
+  if has('gui')
+    let g:MyVimLib = 'gvimfullscreen.dll'
+    function! FullscreenToggle()
+      call libcallnr(g:MyVimLib, "ToggleFullScreen", 1)
+    endfunction
+    nmap <F11> :call FullscreenToggle()<CR>
+    autocmd GUIEnter * call libcallnr(g:MyVimLib, "SetAlpha", 240)
+  else
+    set nocursorline
+    set termencoding=gbk
+    highlight Folded ctermbg=0
+    highlight FoldColumn ctermbg=0
+    highlight SignColumn ctermbg=0
+  endif
+endif
+" }}}
+"  加载 Vim 配置文件时让一些设置不再执行 {{{
+"  并记录加载 Vim 配置文件的次数
+if !exists("g:VimrcIsLoad")
+  let g:VimrcIsLoad = 1
+else
+  let g:VimrcIsLoad = g:VimrcIsLoad + 1
+endif
+" }}}
+
+" InsertMapForEnter: <CR> {{{
+function! InsertMapForEnter()
+    let line = trim(getline('.'))
+    if pumvisible()
+        return "\<C-y>"
+    elseif index([')', ']', '}'], strcharpart(line, getpos('.')[2]-1, 1)) >= 0
+        return "\<CR>\<Esc>O"
+    elseif strcharpart(line, getpos('.')[2]-1,2) == '</'
+        return "\<CR>\<Esc>O"
+    else
+        return "\<CR>"
+    endif
+endfunction
+" }}}
+" vim: set shiftwidth=2 tabstop=2 softtabstop=2 expandtab textwidth=78 foldlevel=0 foldmethod=marker foldopen=all foldclose=all spell:
