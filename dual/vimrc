@@ -1,8 +1,10 @@
 scriptencoding utf-8
+set nocompatible
 " Title: Vimrc for windows and linux
 " Maintainer: Yeoman Zhuang <zyeoman@163.com>
-" Last Modified: 2019-06-16 12:27
+" Last Modified: 2023-09-15 18:38
 
+set conceallevel=1
 " Startup {{{
   let mapleader=" "
   let maplocalleader=" "
@@ -104,15 +106,31 @@ endif
   " [%       定位块首
   " ]%       定位块尾
     Plug 'tmhedberg/matchit', { 'for': ['html', 'xml'] }
+    " Plug 'zchee/vim-flatbuffers'
+    " Plug 'NoahTheDuke/vim-just'
   " }}}
   " Plug 'xolox/vim-notes'
   " Plug 'xolox/vim-misc'
+  " Plug 'APZelos/blamer.nvim'
   " Display {{{
   " 优化显示，包括配色、AirLine、标记
-    Plug 'octol/vim-cpp-enhanced-highlight'
+    " Plug 'octol/vim-cpp-enhanced-highlight'
     " Colorscheme
+    " Plug 'flazz/vim-colorschemes'
     Plug 'morhetz/gruvbox'
-    Plug 'flazz/vim-colorschemes'
+    if has('nvim')
+      " Plug 'github/copilot.vim'
+      Plug 'Exafunction/codeium.vim'
+      let g:codeium_disable_bindings = 1
+      Plug 'navarasu/onedark.nvim'
+      Plug 'catppuccin/nvim', { 'as': 'catppuccin' }
+    else
+      Plug 'joshdick/onedark.vim'
+      Plug 'catppuccin/nvim', { 'as': 'catppuccin' }
+    endif
+    Plug 'arcticicestudio/nord-vim'
+    Plug 'sainnhe/everforest'
+    Plug 'dracula/vim'
     " Airline - 更轻的vim-powerline替代品 {{{
       Plug 'vim-airline/vim-airline'
       " Plug 'vim-airline/vim-airline-themes'
@@ -124,14 +142,17 @@ endif
       let g:airline#extensions#tagbar#enabled = 1
     " }}}
     "Git 显示修改 {{{
-      Plug 'airblade/vim-gitgutter'
-      let g:airline_section_b = '%{get(g:,"coc_git_status", "")}%{get(b:, "coc_git_status", "")}%{get(b:,"coc_git_blame","")}%{ObsessionStatus()}'
+      " Plug 'airblade/vim-gitgutter'
+      " let g:airline_section_b = '%{get(g:,"coc_git_status", "")}%{get(b:, "coc_git_status", "")}%{get(b:,"coc_git_blame","")}%{ObsessionStatus()}'
       let g:airline_section_z = '%#__accent_bold#%4l%#__restore__#%#__accent_bold#/%L%#__restore__# :%3v'
       nnoremap <silent> <leader>cc  :<C-u>CocCommand<CR>
+      nnoremap <silent> <leader>df :<C-u>vertical Git diff %<CR>
+     nmap <silent> <leader>h :vs %:p:r.h<CR>
+     nmap <silent> <leader>H :vs %:p:r.cpp<CR>
       Plug 'tpope/vim-fugitive'
       " [] c 跳转
-      let g:gitgutter_diff_args = '-w'
-      command! GitFold GitGutterFold
+      " let g:gitgutter_diff_args = '-w'
+      " command! GitFold GitGutterFold
     " }}}
     " Mark显示
     Plug 'kshenoy/vim-signature'
@@ -139,17 +160,20 @@ endif
   " }}}
   " Window {{{
   " 添加新窗口
-    " F9 tagbar
+    " F8 tagbar
     nnoremap <silent> <F8> :TagbarToggle<CR>
+    " nmap <F9> <Plug>(ale_fix)
     Plug 'majutsushi/tagbar'
     Plug 'lvht/tagbar-markdown'
+    Plug 'jackguo380/vim-lsp-cxx-highlight', {'for': ['cpp']}
+    let g:lsp_cxx_hl_use_text_props = 1
     " 搜索 TODO,FIXME,XXX, 生成TaskList
     " F7 List
     Plug 'fisadev/FixedTaskList.vim'
     nnoremap <silent> <F7> :TaskList<CR>
-    " F6 NerdTree
-    Plug 'scrooloose/nerdtree'
-    nnoremap <silent> <F6> :NERDTreeToggle<CR>
+    " " F6 NerdTree
+    " Plug 'scrooloose/nerdtree'
+    " nnoremap <silent> <F6> :NERDTreeToggle<CR>
     " F10 RUN
     Plug 'thinca/vim-quickrun'
     nnoremap <silent> <F10> :QuickRun<CR>
@@ -179,12 +203,17 @@ endif
     " let g:multi_cursor_skip_key='<C-x>'
     " let g:multi_cursor_quit_key='<Esc>'
     " 自动配对
-    Plug 'vim-scripts/auto-pairs-gentle'
+    Plug 'jiangmiao/auto-pairs'
+    let g:AutoPairs = {'(':')', '[':']', '{':'}',"'":"'",'"':'"', '```':'```', "`":"`"}
+    " "b'":"'", "f'":"'", "r'":"'"
+    " let g:AutoPairs['“'] = '”'
+    " let g:AutoPairs['「'] = '」'
     " Win Resize {{{
     " 使用C-e hjkl设置窗口大小
       Plug 'simeji/winresizer'
       let g:winresizer_gui_enable = 1
     " }}}
+    Plug 'jreybert/vim-largefile'
     " gcc注释
     Plug 'tpope/vim-commentary'
     " gS,gJ split/join
@@ -204,25 +233,38 @@ endif
     Plug 'tpope/vim-repeat'
     " Plug 'Yggdroot/indentLine'
     " <leader>f {{{
-      Plug 'easymotion/vim-easymotion'
-      let g:EasyMotion_do_mapping = 0
-      nnoremap <leader>w <Plug>(easymotion-w)
-      nnoremap <leader>j <Plug>(easymotion-j)
-      nnoremap <leader>k <Plug>(easymotion-k)
+      " Plug 'easymotion/vim-easymotion'
+      " let g:EasyMotion_do_mapping = 0
+      " nnoremap <leader>w <Plug>(easymotion-w)
+      " nnoremap <leader>j <Plug>(easymotion-j)
+      " nnoremap <leader>k <Plug>(easymotion-k)
       " 快速跳转查找函数
       if has('win32')
         Plug 'Yggdroot/LeaderF', { 'do': '.\install.bat' }
       else
         Plug 'Yggdroot/LeaderF', { 'do': './install.sh' }
       endif
+      Plug 'voldikss/LeaderF-emoji'
+      " Plug 'kkoomen/vim-doge', { 'do': 'npm i --no-save && npm run build:binary:unix'  }
       noremap <C-F> :<C-U><C-R>=printf("Leaderf! rg -e %s ", expand("<cword>"))<CR><CR>
       nnoremap <silent> <leader>m :LeaderfMru<cr>
       nnoremap <silent> <leader>l :LeaderfLine<cr>
       nnoremap <silent> <leader>t :LeaderfFunction<cr>
       nnoremap <silent> <leader>b :LeaderfBuffer<cr>
+
+      let g:Lf_HideHelp = 1
+      let g:Lf_UseCache = 0
+      let g:Lf_UseVersionControlTool = 0
+      let g:Lf_IgnoreCurrentBufferName = 1
       let g:Lf_WorkingDirectoryMode = 'cF'
       let g:Lf_MruMaxFiles = 233
       let g:Lf_WindowHeight=0.3
+
+      " let g:Lf_WindowPosition = 'popup'
+      let g:Lf_PreviewInPopup = 1
+      let g:Lf_StlSeparator = { 'left': "\ue0b0", 'right': "\ue0b2"}
+      let g:Lf_PreviewResult = {'Function': 0, 'BufTag': 0 }
+
       let g:Lf_WildIgnore = {
               \ 'dir': ['.svn','.git','.hg'],
               \ 'file': ['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]','*.zip','*.tar.*']
@@ -271,12 +313,63 @@ endif
       Plug 'mattn/emmet-vim', { 'for': [ 'css', 'html', 'less', 'sass', 'scss', 'xml', 'xsd', 'xsl', 'xslt', 'mustache','vue' ] }
       imap   <C-y><C-y>   <plug>(emmet-expand-abbr)
     " }}}
+    Plug 'junegunn/fzf', {'dir': '~/.fzf','do': './install --all'}
+    Plug 'junegunn/fzf.vim' " needed for previews
     Plug 'neoclide/coc.nvim', {'branch': 'release'}
+    Plug 'antoinemadec/coc-fzf'", {'branch': 'release'}
     let g:coc_global_extensions=["coc-json","coc-css","coc-html","coc-gocode","coc-emoji","coc-syntax", "coc-lists","coc-emmet","coc-yank","coc-word"]
     " coc-ultisnips
-    nnoremap <silent> <space>y  :<C-u>CocList -A --normal yank<cr>
+    " nnoremap <silent> <space>y  :<C-u>CocList -A --normal yank<cr>
+    nnoremap <silent> <space>e :CocCommand explorer<cr>
     " Remap for rename current word
     nmap <leader>rn <Plug>(coc-rename)
+    " nmap <leader>d :<C-u>CocFzfList diagnostics<cr>
+    nmap <leader>y :<C-u>CocFzfList<cr>
+
+    vmap <leader>a  <Plug>(coc-codeaction-selected)
+    xmap <leader>a  <Plug>(coc-codeaction-selected)
+
+    " navigate chunks of current buffer
+    nmap [g <Plug>(coc-git-prevchunk)
+    nmap ]g <Plug>(coc-git-nextchunk)
+    nmap <silent> [l <Plug>(coc-diagnostic-prev)
+    nmap <silent> ]l <Plug>(coc-diagnostic-next)
+    " " show chunk diff at current position
+    nmap gs <Plug>(coc-git-chunkinfo)
+    " GoTo code navigation.
+    nmap <silent> gd <Plug>(coc-definition)
+    nmap <silent> gy <Plug>(coc-type-definition)
+    nmap <silent> gi <Plug>(coc-implementation)
+    nmap <silent> gr <Plug>(coc-references)
+    " " show commit contains current position
+    " nmap gc <Plug>(coc-git-commit)
+    " nmap gc :CocCommand git.chunkStage<cr>
+    " " create text object for git chunks
+    omap ig <Plug>(coc-git-chunk-inner)
+    xmap ig <Plug>(coc-git-chunk-inner)
+    omap ag <Plug>(coc-git-chunk-outer)
+    xmap ag <Plug>(coc-git-chunk-outer)
+    " Formatting selected code.
+    nmap <F9>  :call <SID>UpdateLastMod('')<cr> <bar> <Plug>(coc-format)
+    vmap <F9>  <Plug>(coc-format-selected)
+
+" Use tab for trigger completion with characters ahead and navigate.
+" NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
+" other plugin before putting this into your config.
+inoremap <silent><expr> <TAB>
+      \ exists('b:_codeium_completions') && !empty(get(b:_codeium_completions, 'items', [])) ? codeium#Accept():
+      \ coc#pum#visible() ? coc#pum#next(1):
+      \ coc#expandableOrJumpable() ? "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :
+      \ CheckBackspace() ? "\<Tab>" :
+      \ coc#refresh()
+inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
+" imap <silent><script><expr> <Right> codeium#Accept()
+" https://github.com/Exafunction/codeium.vim/issues/142
+
+function! CheckBackspace() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
 
     function! CopyMatches(reg)
       let hits = []
@@ -299,6 +392,31 @@ endif
       endif
     endfunction
     " Smaller updatetime for CursorHold & CursorHoldI
+  " NOTE: Requires 'textDocument.documentSymbol' support from the language server.
+    xmap if <Plug>(coc-funcobj-i)
+    omap if <Plug>(coc-funcobj-i)
+    xmap af <Plug>(coc-funcobj-a)
+    omap af <Plug>(coc-funcobj-a)
+    xmap ic <Plug>(coc-classobj-i)
+    omap ic <Plug>(coc-classobj-i)
+    xmap ac <Plug>(coc-classobj-a)
+    omap ac <Plug>(coc-classobj-a)
+
+    " Use CTRL-S for selections ranges.
+    " Requires 'textDocument/selectionRange' support of language server.
+    nmap <silent> <C-s> <Plug>(coc-range-select)
+    xmap <silent> <C-s> <Plug>(coc-range-select)
+
+    " Remap <C-f> and <C-b> for scroll float windows/popups.
+    if has('nvim-0.4.0') || has('patch-8.2.0750')
+      nnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : ":<C-U><C-R>=printf('Leaderf! rg -e %s ', expand('<cword>'))<CR><CR>"
+      nnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
+      inoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(1)\<cr>" : "\<Right>"
+      inoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(0)\<cr>" : "\<Left>"
+      vnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
+      vnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
+    endif
+      " Smaller updatetime for CursorHold & CursorHoldI
     set updatetime=300
     " Install on archlinux
     " Adding "--system-libclang" to ./install.py
@@ -306,12 +424,19 @@ endif
     " Plug 'rdnetto/YCM-Generator', { 'branch': 'stable' }
     Plug 'hotoo/pangu.vim'
     autocmd BufWritePre *.markdown,*.md,*.text,*.txt,*.wiki,*.cnx call PanGuSpacing()
-    Plug 'ervandew/supertab'
-    let g:SuperTabDefaultCompletionType = '<C-n>'
+    " Plug 'ervandew/supertab'
+    " let g:SuperTabDefaultCompletionType = '<C-n>'
     " let g:SuperTabClosePreviewOnPopupClose = 1
 
-    inoremap <silent><expr> <CR>
-      \ pumvisible() ? "\<C-y>": "\<CR>\<Plug>DiscretionaryEnd"
+    " inoremap <silent><expr> <CR>
+    "   \ pumvisible() ? "\<C-y>": "\<CR>\<Plug>DiscretionaryEnd"
+    inoremap <silent><expr> <cr> pumvisible() ? coc#pum#confirm():
+          \ coc#expandableOrJumpable() ? "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :
+                              \ "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>\<Plug>DiscretionaryEnd"
+
+" Use <C-j> for select text for visual placeholder of snippet.
+vmap <C-j> <Plug>(coc-snippets-select)
+
     let g:endwise_no_mappings = 1
     function! s:check_back_space() abort
       let col = col('.') - 1
@@ -320,11 +445,11 @@ endif
 
     let g:coc_snippet_next = '<C-j>'
     " 代码片段
-    Plug 'SirVer/ultisnips'
+    " Plug 'SirVer/ultisnips'
     Plug 'tpope/vim-endwise'
     Plug 'honza/vim-snippets'
     " better key bindings for UltiSnipsExpandTrigger
-    let g:UltiSnipsExpandTrigger = "<Tab>"
+    " let g:UltiSnipsExpandTrigger = "<Tab>"
   " }}}
   " 中文Doc
   Plug 'vimcn/vimcdoc'
@@ -336,24 +461,27 @@ endif
     " Plug 'sheerun/vim-polyglot', { 'for': ['typescript','python'] }
     " Plug 'romainl/vim-qlist'
     " Python and other languages code checker
-    Plug 'tbastos/vim-lua'
-    Plug 'udalov/kotlin-vim'
+    " Plug 'tbastos/vim-lua'
+    " Plug 'udalov/kotlin-vim'
     "ale {{{
+      let g:ale_disable_lsp = 1
       Plug 'w0rp/ale'
       let g:ale_c_clang_options = '-std=c17 -Wall -Wno-deprecated'
-      let g:ale_c_parse_makefile = 0
+      let g:ale_c_parse_makefile = 1
       let g:ale_c_parse_compile_commands = 1
+      let g:ale_pyrex_cython_options = '-3 --warning-extra --warning-errors'
       let g:ale_sign_column_always = 1
       let g:ale_fix_on_save = 1
       let g:ale_fixers = {
-      \  'python': ['autopep8'],
+      \  'python': ['black'],
       \  'cpp': ['clang-format'],
       \  'c': ['clang-format'],
-      \  'go' : ['gofmt', 'goimports'],
+      \  'go': ['gofmt', 'goimports'],
       \  'javascript': ['standard'],
       \  'html': ['prettier'],
       \  'css': ['stylelint'],
-      \ 'rust': ['rustfmt']
+      \  'json': ['jq'],
+      \  'rust': ['rustfmt']
       \ }
       " :call extend(g:ale_linters, {
       "     \"go": ['golint', 'go vet'], })
@@ -376,14 +504,14 @@ endif
     " operators, highlighting, run and ipdb breakpoints)
     " Plug 'python-mode/python-mode'
     " VimWiki {{{
-      Plug 'vimwiki/vimwiki'
-      map <Leader>ww <Plug>VimwikiIndex
-      let g:vimwiki_list = [{'path':'~/tik/','syntax':'markdown'}]
+      " Plug 'vimwiki/vimwiki'
+      " map <Leader>ww <Plug>VimwikiIndex
+      " let g:vimwiki_list = [{'path':'~/tik/','syntax':'markdown'}]
     " }}}
     " Vim-Jekyll {{{
-      Plug 'zYeoman/vim-jekyll'
-      let g:jekyll_post_extension = '.md'
-      let g:jekyll_post_filetype = 'markdown'
+      " Plug 'zYeoman/vim-jekyll'
+      " let g:jekyll_post_extension = '.md'
+      " let g:jekyll_post_filetype = 'markdown'
     " }}}
     " Vim-Orgmode {{{
       Plug 'jceb/vim-orgmode'
@@ -528,12 +656,23 @@ endif
 " }}}
 " General {{{
   syntax on
+  if has('termguicolors')
+    set termguicolors                    " Enable GUI colors for the terminal to get truecolor"]]"]]
+    let &t_TI = ""
+    let &t_TE = ""
+  endif
   if exists('$TMUX')
-    set termguicolors
+      let &t_8f = "\<Esc>[38:2:%lu:%lu:%lum"
+      let &t_8b = "\<Esc>[48:2:%lu:%lu:%lum"
+  endif
+  if &term =~ '256color'
+    " disable Background Color Erase (BCE) so that color schemes
+    " render properly when inside 256-color tmux and GNU screen.
+    " see also https://sunaku.github.io/vim-256color-bce.html
+    set t_ut=
   endif
   set display=lastline
   set mouse=
-  set nocompatible
   set history=1024
   set cmdheight=2
   set noautochdir
@@ -562,6 +701,9 @@ endif
 " Global undo\swap\nobackup {{{
   " global undo
   let s:undodir = expand(s:vimroot . '/undodir')
+  if has('nvim')
+    let s:undodir = expand(s:vimroot . '/nvim_undodir')
+  endif
   if !isdirectory(s:undodir)
     call mkdir(s:undodir, 'p')
   endif
@@ -630,8 +772,8 @@ endif
   endtry
 " }}}
 " key map {{{
-  nmap <C-w><C-z> :tabedit %<cr>
-  nmap <silent> <leader>ee :e $MYVIMRC<cr>
+  nmap <silent> <leader>ce :tabedit %<cr>
+  nmap <silent> <leader>cc :e $MYVIMRC<cr>
   nmap <silent> <leader>cd :cd %:h<cr>:pwd<cr>
   " nmap <expr> <CR> (&buftype is# "quickfix" ? "<CR>" : ":a<CR><CR>.<CR>")
   " 使用leader q来打开关闭quickfix
@@ -641,9 +783,12 @@ endif
   nnoremap <silent> <leader>p :setlocal paste! paste?<cr>
   nnoremap DD "_dd
   nnoremap YY "+yy
-  noremap <leader>z :bp<CR>
-  noremap <leader>x :bn<CR>
-  noremap <leader>c :bd<CR>
+  noremap <leader>n :bp<CR>
+  noremap <leader>v <C-w>t<C-w>K
+  " noremap <leader>b <C-w>t<C-w>H
+  " noremap <leader>z :bp<CR>
+  " noremap <leader>x :bn<CR>
+  " noremap <leader>c :bd<CR>
   imap <C-j> <C-o>o
   " c-v c-c 粘贴复制
   imap <C-v> <esc>"+pa
@@ -668,7 +813,7 @@ endif
   nnoremap H ^
   nnoremap L $
   " Tab操作
-  nmap tn :tabnew
+  nmap tn :tabnew<space>
   nmap tc :tabclose<cr>
   nmap th :tabp<cr>
   nmap tl :tabn<cr>
@@ -676,6 +821,15 @@ endif
   nmap <C-j> <c-w>j
   nmap <C-h> <C-w>h
   nmap <C-l> <c-w>l
+  " tnoremap <Esc> <C-C>
+  " tnoremap <Esc> <C-W>N
+  " tnoremap <Esc><Esc> <C-W>N
+  set timeout timeoutlen=1000  " Default
+  set ttimeout ttimeoutlen=100  " Set by defaults.vim
+  tmap <C-k> <C-w>k
+  tmap <C-j> <c-w>j
+  tmap <C-h> <C-w>h
+  tmap <C-l> <c-w>l
   " }}}
   " Visual Mode Map {{{}}
   vnoremap < <gv
@@ -703,7 +857,13 @@ endif
   " source $VIMRUNTIME/mswin.vim
 " }}}
 " Endup {{{
-colorscheme gruvbox
+let g:onedark_terminal_italics = 1
+" colorscheme onedark
+colorscheme catppuccin-latte
+" colorscheme everforest
+" colorscheme gruvbox
+"
+" colorscheme dracula
 " highlight CocHighlightText  term=bold cterm=reverse ctermfg=167 ctermbg=235 gui=reverse guifg=#fb4934 guibg=#282828
 if has('win32')
   if has('gui')
@@ -744,6 +904,44 @@ function! InsertMapForEnter()
         return "\<CR>"
     endif
 endfunction
-  autocmd FileType cpp setlocal commentstring=//\ %s shiftwidth=2
+  " function! CocUpdateQuickFixes(error, actions) abort
+  "     noa w
+  " endfunction
+  " autocmd BufWritePost,FileWritePost *  call CocActionAsync('format', function('CocUpdateQuickFixes'))
+  nmap <leader>qf  <Plug>(coc-fix-current)
+  " set formatexpr=CocAction('formatSelected')
+    " highlight link LspCxxHlGroupMemberVariable normal
+    " highlight LspCxxHlGroupMemberVariable cterm=italic gui=italic
+    " highlight LspCxxHlSymParameter cterm=italic gui=italic
+
+    highlight link CocSem_enum Type
+    highlight link CocSem_class Type
+    highlight link CocSem_method Function
+    highlight link CocSem_function Function
+    highlight CocSem_parameter cterm=italic gui=italic
+    highlight CocSem_property cterm=italic gui=italic
+    highlight CocSem_enumMember ctermfg=13 guifg=#AD7FA8
+    highlight link CocGitAddedSign GitGutterAdd
+    highlight link CocGitChangedSign GitGutterChange
+    highlight link CocGitRemovedSign GitGutterDelete
+    highlight link CocGitChangeRemovedSign GitGutterChangeDelete
+    highlight link CocCodeLens Comment
+    " highlight CocInlayHint ctermfg=109 ctermbg=237 guifg=#83a598 guibg=#32393f
+    " highlight CocFadeOut     ctermfg=245 guifg=#928374
+    " autocmd ColorScheme *
+    "       \ hi CocErrorHighlight guibg=#902020
+    "       \ | hi CocWarningHighlight guibg=#909020
+    "       \ | hi CocInfoHighlight guibg=#209020
+    "       \ | hi CocHintHighlight guibg=#204090
+    " highlight CocUnusedHighlight ctermfb=1 ctermbg=None guibg=None
+    " highlight Comment cterm=italic gui=italic
+    set tags=tags,./tags,../tags,../../tags,../../../tags
+    set wrap
+    set signcolumn=yes
+    xnoremap "+y y:call system("wl-copy", @")<cr>
+    nnoremap "+p :let @"=substitute(system("wl-paste --no-newline"), '<C-v><C-m>', '', 'g')<cr>p
+    nnoremap "*p :let @"=substitute(system("wl-paste --no-newline --primary"), '<C-v><C-m>', '', 'g')<cr>p")"
+    " hi NORMAL ctermbg=NONE guibg=NONE
+    set nocursorline 
 " }}}
 " vim: set shiftwidth=2 tabstop=2 softtabstop=2 expandtab textwidth=78 foldlevel=0 foldmethod=marker foldopen=all foldclose=all spell:
